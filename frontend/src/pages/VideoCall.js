@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { CallClient, LocalVideoStream } from '@azure/communication-calling';
+import React, { useState, useEffect, useRef } from 'react';
+import { CallClient, CallAgent, DeviceManager, LocalVideoStream, Renderer, VideoStreamRenderer } from '@azure/communication-calling';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
-import axios from 'axios';
 import '../assets/styles/VideoCall.css';
 
 const VideoCall = () => {
-  const [callAgents, setCallAgents] = useState([]);
+  const [callAgent, setCallAgent] = useState(null);
   const [deviceManager, setDeviceManager] = useState(null);
   const [call, setCall] = useState(null);
   const [localVideoStream, setLocalVideoStream] = useState(null);
@@ -15,15 +14,15 @@ const VideoCall = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
 
-  const token = '<YOUR_ACS_TOKEN>'; // Replace with your ACS token
+  const token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjYwNUVCMzFEMzBBMjBEQkRBNTMxODU2MkM4QTM2RDFCMzIyMkE2MTkiLCJ4NXQiOiJZRjZ6SFRDaURiMmxNWVZpeUtOdEd6SWlwaGsiLCJ0eXAiOiJKV1QifQ.eyJza3lwZWlkIjoiYWNzOjE1ZmJkYjY5LTBmMWUtNGU4MS1iZjY2LTk1Y2Q4MDlmMTU0NF8wMDAwMDAyMC01OWM5LWExOTgtOTE4ZS1hZjNhMGQwMDMzYjAiLCJzY3AiOjE3OTIsImNzaSI6IjE3MTY4MTA5MzkiLCJleHAiOjE3MTY4OTczMzksInJnbiI6ImVtZWEiLCJhY3NTY29wZSI6ImNoYXQsdm9pcCIsInJlc291cmNlSWQiOiIxNWZiZGI2OS0wZjFlLTRlODEtYmY2Ni05NWNkODA5ZjE1NDQiLCJyZXNvdXJjZUxvY2F0aW9uIjoiZXVyb3BlIiwiaWF0IjoxNzE2ODEwOTM5fQ.VbQ1hetZAiU-7_FHOv5adK9kCM6-n89J-_rKejtJFBFw6uVI0Y-fnGE7n7gJwy7tnhTzAxlHVMa4RYxq1pM3myZN6Z5O-UV0u9gdWJ2c5wbudCvncIQUs47yUG_We1VsgdkJht2lwgQGr0ker2p8ZvDC8Q3WYcM9A0EiovXXtRzNzvIx6SCELJ0QB79FCSZZTmrG7r1_5HUwBmwr0_2mNWXy8I30YKPZp4jWzU7es1jkGKS329lpDFQflOzrgwOAj87C2wtQp0hh-Yz9JaUjXst0qTvFjWK_CCkx26d4hkeICN6NEUMgVqBh7_gqiCx7aUkqDhS-YwJrC07IdjfMSQ'; // Replace with your ACS token
+  const callClient = new CallClient();
+  const tokenCredential = new AzureCommunicationTokenCredential(token);
 
   useEffect(() => {
     const init = async () => {
-      const callClient = new CallClient();
-      const tokenCredential = new AzureCommunicationTokenCredential(token);
-      const callAgent = await callClient.createCallAgent(tokenCredential);
-      setCallAgents((prevAgents) => [...prevAgents, callAgent]);
-      const devices = await callAgent.getDeviceManager();
+      const agent = await callClient.createCallAgent(tokenCredential);
+      setCallAgent(agent);
+      const devices = await agent.getDeviceManager();
       setDeviceManager(devices);
     };
 
@@ -31,16 +30,13 @@ const VideoCall = () => {
   }, []);
 
   const handleStartCall = async () => {
-    if (callAgents.length > 0) {
-      const callAgent = callAgents[0]; // Use the first call agent
-      const callOptions = {
-        videoOptions: {
-          localVideoStreams: localVideoStream ? [localVideoStream] : undefined,
-        },
-      };
-      const call = callAgent.startCall([{ communicationUserId: '<REMOTE_USER_ID>' }], callOptions);
-      setCall(call);
-    }
+    const callOptions = {
+      videoOptions: {
+        localVideoStreams: localVideoStream ? [localVideoStream] : undefined,
+      },
+    };
+    const call = callAgent.startCall([{ communicationUserId: '<REMOTE_USER_ID>' }], callOptions);
+    setCall(call);
   };
 
   const handleToggleCamera = async () => {
@@ -74,31 +70,6 @@ const VideoCall = () => {
     }
   };
 
-  const handleStartRecording = async () => {
-    try {
-      const response = await axios.post('http://localhost:3000/startRecording', {
-        meetingId: call.id,
-        streamingUrl: call.remoteParticipants[0].videoStreams[0].mediaStreamType.url, // Use appropriate URL
-      });
-      console.log('Recording started:', response.data);
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-    }
-  };
-
-  const handleStopRecording = async () => {
-    try {
-      const response = await axios.post('http://localhost:3000/stopRecording', {
-        jobName: '<JOB_NAME>', // Use the job name returned from startRecording API
-      });
-      console.log('Recording stopped:', response.data);
-      setIsRecording(false);
-    } catch (error) {
-      console.error('Failed to stop recording:', error);
-    }
-  };
-
   return (
     <div className="video-call-container">
       <div className="video-section">
@@ -110,9 +81,6 @@ const VideoCall = () => {
           </button>
           <button onClick={handleToggleMute}>
             {isMicMuted ? 'Unmute' : 'Mute'}
-          </button>
-          <button onClick={isRecording ? handleStopRecording : handleStartRecording}>
-            {isRecording ? 'Stop Recording' : 'Start Recording'}
           </button>
         </div>
       </div>

@@ -1,0 +1,36 @@
+.recording-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .recording-list {
+    margin-top: 20px;
+  }
+  
+  .recording-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .recording-item span {
+    flex: 1;
+  }
+  
+  .recording-item button {
+    margin-left: 10px;
+  }
+  
+  .video-player {
+    margin-top: 20px;
+  }
+  
+  video {
+    width: 100%;
+    height: auto;
+  }
