@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 
 const LoginForm = ({ onSubmit }) => {
     const [formData, setFormData] = useState({
-        email: '',
+        username: '',
         password: ''
       });
     
     const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
     };
 
     const handleSubmit = (e) => {
@@ -17,16 +18,16 @@ const LoginForm = ({ onSubmit }) => {
 
     return (
     <form className="form" onSubmit={handleSubmit}>
-        <div className={`text_field ${formData.email ? 'has-content' : ''}`}>
+        <div className={`text_field ${formData.username? 'has-content' : ''}`}>
         <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
+            type="username"
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
             required
         />
-        <label htmlFor="email">Email</label>
+        <label htmlFor="username">username</label>
         </div>
         <div className={`text_field ${formData.password ? 'has-content' : ''}`}>
         <input

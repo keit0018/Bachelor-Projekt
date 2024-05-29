@@ -92,6 +92,34 @@ const fakeApiCall = async () => {
       time: '02:00 PM',
       participants: ['Alice', 'Client A'],
     },
+    {
+      id: 3,
+      title: 'Client Meeting',
+      date: '2024-06-01',
+      time: '02:00 PM',
+      participants: ['Alice', 'Client A'],
+    },
+    {
+      id: 4,
+      title: 'Client Meeting',
+      date: '2024-06-01',
+      time: '02:00 PM',
+      participants: ['Alice', 'Client A'],
+    },
+    {
+      id: 5,
+      title: 'Client Meeting',
+      date: '2024-06-01',
+      time: '02:00 PM',
+      participants: ['Alice', 'Client A'],
+    },
+    {
+      id: 6,
+      title: 'Client Meeting',
+      date: '2024-06-01',
+      time: '02:00 PM',
+      participants: ['Alice', 'Client A'],
+    }
   ];
 };
 

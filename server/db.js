@@ -1,43 +1,18 @@
-const sql = require('mssql');
-const { DefaultAzureCredential } = require('@azure/identity');
-const config = require('./dbConfig');
+const { MongoClient } = require('mongodb');
+require('dotenv').config();
+
+const uri = process.env.MONGODB_URI; // e.g., "mongodb+srv://<username>:<password>@cluster0.mongodb.net/myDatabase?retryWrites=true&w=majority"
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function connectToDatabase() {
-  const credential = new DefaultAzureCredential();
-  const accessToken = await credential.getToken("https://database.windows.net/.default");
-
-  const dbConfig = {
-    ...config,
-    authentication: {
-      type: 'azure-active-directory-access-token',
-      options: {
-        token: accessToken.token
-      }
-    }
-  };
-
   try {
-    let pool = await sql.connect(dbConfig);
-    console.log('Connected to the database');
-    return pool;
+    await client.connect();
+    console.log('Connected to MongoDB');
+    return client.db(process.env.DB_NAME); // replace with your database name
   } catch (err) {
-    console.error('Database connection failed: ', err);
+    console.error('Failed to connect to MongoDB', err);
     throw err;
   }
 }
 
-async function queryDatabase() {
-  const pool = await connectToDatabase();
-  
-  try {
-    const result = await pool.request().query('SELECT TOP 1 * FROM Users');
-    return result.recordset;
-  } catch (err) {
-    console.error('Query failed: ', err);
-    throw err;
-  } finally {
-    pool.close();
-  }
-}
-
-module.exports = { queryDatabase };
+module.exports = connectToDatabase;

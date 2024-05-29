@@ -4,7 +4,7 @@
     left: 0;
     width: 50px; /* width when collapsed */
     height: 100%;
-    background-color: #333;
+    background-color: #2b242e;
     overflow-x: hidden;
     transition: width 0.3s;
   }
@@ -50,7 +50,7 @@
   }
   
   .sidebar-content ul li a:hover {
-    background-color: #575757;
+    background-color: #0dbf42;
   }
   
   .sidebar:hover .sidebar-content ul li a {

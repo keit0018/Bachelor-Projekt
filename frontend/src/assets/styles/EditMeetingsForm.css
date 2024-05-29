@@ -43,13 +43,13 @@
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #2b242e;
     color: white;
     cursor: pointer;
   }
   
   .form-actions button:hover {
-    background-color: #0056b3;
+    background-color: #0dbf42;
   }
   
   .form-actions button[type="button"] {

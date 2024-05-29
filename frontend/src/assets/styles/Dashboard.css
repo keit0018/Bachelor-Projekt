@@ -1,0 +1,51 @@
+.dashboard-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboard-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .next-meeting, .upcoming-meetings, .quick-actions {
+    margin-bottom: 20px;
+  }
+  
+  .meeting-details p, .upcoming-meetings ul {
+    margin: 5px 0;
+  }
+  
+  .upcoming-meetings ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .upcoming-meetings li {
+    background-color: #fff;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .quick-actions button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #2b242e;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .quick-actions button:hover {
+    background-color: #0dbf42;
+  }
