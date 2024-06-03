@@ -1,13 +1,17 @@
 const express = require('express');
-const connectToDatabase = require('./db');
 const { createUserAndToken } = require('./acs');
+const mongoose = require('mongoose');
+const userRoutes = require('./routes/userRoutes');
+const config = require('./config');
 require('dotenv').config();
 
+
+//creating express server
 const app = express();
 const port = process.env.PORT || 3000;
-
 app.use(express.json());
 
+//connecting to azure communication services video
 app.get('/acs/token', async (req, res) => {
   try {
     const tokenData = await createUserAndToken();
@@ -18,18 +22,18 @@ app.get('/acs/token', async (req, res) => {
   }
 });
 
-app.get('/data', async (req, res) => {
-  try {
-    const db = await connectToDatabase();
-    const collection = db.collection('your_collection');
-    const data = await collection.find({}).toArray();
-    res.json(data);
-  } catch (err) {
-    console.error('Error querying database:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//connecting to database
+mongoose.connect(config.mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
+//after connecting use this. 
+app.use('/api/users', userRoutes);
+
+
+//confirmation that server is running
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

@@ -42,9 +42,6 @@ const LoginForm = ({ onSubmit }) => {
         </div>
         <div className="pass">Forgot password?</div>
         <button type="submit">Login</button>
-        <div className="signup_link">
-        Not a member? <a href="#">SignUp</a>
-        </div>
     </form>
     );
 };

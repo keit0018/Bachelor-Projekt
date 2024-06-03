@@ -40,13 +40,15 @@
   }
   
   .sidebar-content ul li a {
+    display: flex; /* Change display to flex */
+    align-items: center;
     display: block;
     width: 100%;
     padding: 10px;
     color: white;
     text-decoration: none;
-    text-align: center;
-    transition: background-color 0.3s;
+    text-align: left;
+    transition: background-color 0.3s, opacity 0.3s; /* apply transition effect */
   }
   
   .sidebar-content ul li a:hover {
@@ -54,5 +56,45 @@
   }
   
   .sidebar:hover .sidebar-content ul li a {
-    text-align: left; /* align text to the left when expanded */
+    opacity: 1; /* Show link text when expanded */
   }
+  .sidebar-content ul li a .icon {
+    opacity: 1; /* Set icon opacity to 1 by default */
+    margin-right: 8px;
+    transition: opacity 0.3s; /* apply transition effect */
+  }
+  
+  .sidebar:hover .sidebar-content ul li a .icon {
+    display: none; /* hide the icon when expanded */
+  }
+
+  .sidebar-content ul li a .linkText {
+    display: none; /* hide the text when collapsed */
+    transition: opacity 0.3s; /* apply transition effect */
+  }
+
+  .sidebar:hover .sidebar-content ul li a .linkText {
+    display: inline; /* show the text when expanded */
+  }
+
+  .logout-button {
+    display: none; /* hide the logout button when collapsed */
+  }
+  .sidebar:hover .logout-button {
+    display: block; /* show the logout button when expanded */
+    width: 100%; /* Ensure the button takes full width */
+    padding: 10px;
+    color: white;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 0%;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar:hover .logout-button:hover {
+    background-color: #fa0909; /* same hover effect as links */
+  }
+
+  
