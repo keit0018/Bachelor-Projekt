@@ -1,35 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/styles/ManageMeetingsPage.css';
+import axios from 'axios';
 import EditMeetingForm from '../components/EditMeetingsForm';
 
 const ManageMeetingsPage = () => {
-  const [meetings, setMeetings] = useState([]);
+  const [createdMeetings, setCreatedMeetings] = useState([]);
+  const [participatingMeetings, setParticipatingMeetings] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
 
   useEffect(() => {
-    // Fetch meetings from backend API
-    fetchMeetings();
+    fetchCreatedMeetings();
+    fetchParticipatingMeetings();
   }, []);
 
-  const fetchMeetings = async () => {
-    // Replace with actual API call
-    const fetchedMeetings = await fakeApiCall();
-    setMeetings(fetchedMeetings);
+  const fetchCreatedMeetings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/meetings/created', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setCreatedMeetings(response.data);
+    } catch (error) {
+      console.error('Error fetching created meetings:', error);
+    }
+  };
+
+  const fetchParticipatingMeetings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/meetings/participating', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setParticipatingMeetings(response.data);
+    } catch (error) {
+      console.error('Error fetching participating meetings:', error);
+    }
   };
 
   const handleEdit = (meeting) => {
+    console.log(meeting);
     setSelectedMeeting(meeting);
   };
 
-  const handleDelete = (meetingId) => {
-    // Call API to delete the meeting
-    // Update state to remove the deleted meeting
-    setMeetings(meetings.filter(meeting => meeting.id !== meetingId));
+  const handleDelete = async (meetingId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/meetings/${meetingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setCreatedMeetings(createdMeetings.filter(meeting => meeting._id !== meetingId));
+    } catch (error) {
+      console.error('Error deleting meeting:', error);
+    }
   };
 
   const handleSave = () => {
     setSelectedMeeting(null);
-    fetchMeetings();
+    fetchCreatedMeetings();
   };
 
   const handleCancel = () => {
@@ -39,6 +72,7 @@ const ManageMeetingsPage = () => {
   return (
     <div className="manage-meetings-container">
       <h2>Manage Meetings</h2>
+      <h3>Meetings You Created</h3>
       <table className="meetings-table">
         <thead>
           <tr>
@@ -50,16 +84,37 @@ const ManageMeetingsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {meetings.map(meeting => (
-            <tr key={meeting.id}>
+          {createdMeetings.map(meeting => (
+            <tr key={meeting._id}>
               <td>{meeting.title}</td>
-              <td>{meeting.date}</td>
+              <td>{new Date(meeting.date).toLocaleDateString()}</td>
               <td>{meeting.time}</td>
-              <td>{meeting.participants.join(', ')}</td>
+              <td>{meeting.participants.map(p => p.username).join(', ')}</td>
               <td>
                 <button onClick={() => handleEdit(meeting)}>Edit</button>
-                <button onClick={() => handleDelete(meeting.id)}>Delete</button>
+                <button onClick={() => handleDelete(meeting._id)}>Delete</button>
               </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h3>Meetings You're Participating In</h3>
+      <table className="meetings-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Participants</th>
+          </tr>
+        </thead>
+        <tbody>
+          {participatingMeetings.map(meeting => (
+            <tr key={meeting._id}>
+              <td>{meeting.title}</td>
+              <td>{new Date(meeting.date).toLocaleDateString()}</td>
+              <td>{meeting.time}</td>
+              <td>{meeting.participants.map(p => p.username).join(', ')}</td>
             </tr>
           ))}
         </tbody>
