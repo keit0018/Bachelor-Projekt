@@ -35,7 +35,7 @@ const Sidebar = ({ authenticated, setAuthenticated, userRole }) => {
                         <span className="linkText">Video Call</span>
                     </Link>
                   </li>
-              {userRole !== 'patient' && (
+              {['worker', 'admin'].includes(userRole) && (
                 <>    
                   <li>
                     <Link to="/schedule-meeting">
@@ -49,15 +49,14 @@ const Sidebar = ({ authenticated, setAuthenticated, userRole }) => {
                       <span className="linkText">Manage Meetings</span>
                       </Link>
                   </li>
-                </>
+                  <li>
+                    <Link to="/recordings">
+                      <VideoLibraryIcon className='icon'/>
+                      <span className="linkText">Recordings</span>
+                    </Link>
+                  </li>
+              </>
               )}
-              <li>
-                <Link to="/recordings">
-                  <VideoLibraryIcon className='icon'/>
-                  <span className="linkText">Recordings</span>
-                </Link>
-              </li>
-              
               <li>
                 <Link to="/settings">
                   <SettingsIcon className='icon'/>

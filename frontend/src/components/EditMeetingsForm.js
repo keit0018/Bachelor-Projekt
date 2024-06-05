@@ -77,11 +77,8 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
           Authorization: `Bearer ${token}`
         }
       });
-  
-      // Log the response from the server for debugging
-      console.log('Update Response:', response);
-  
       onSave();
+      // Log the response from the server for debugging
     } catch (error) {
       // Capture detailed error information
       console.error('Error updating meeting:', error.response ? error.response.data : error.message);

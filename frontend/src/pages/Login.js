@@ -11,10 +11,15 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/login', formData);
 
+
       if (response.status === 200) {
+
+        console.log(response.data);
+        
         const { token, role } = response.data;
         localStorage.setItem('token', token);
         setAuthenticated(true);
+        console.log(role);
         setUserRole(role);
         navigate('/dashboard');
       } else {

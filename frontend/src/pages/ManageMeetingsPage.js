@@ -72,7 +72,6 @@ const ManageMeetingsPage = () => {
   return (
     <div className="manage-meetings-container">
       <h2>Manage Meetings</h2>
-      <h3>Meetings You Created</h3>
       <table className="meetings-table">
         <thead>
           <tr>
@@ -98,27 +97,7 @@ const ManageMeetingsPage = () => {
           ))}
         </tbody>
       </table>
-      <h3>Meetings You're Participating In</h3>
-      <table className="meetings-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Participants</th>
-          </tr>
-        </thead>
-        <tbody>
-          {participatingMeetings.map(meeting => (
-            <tr key={meeting._id}>
-              <td>{meeting.title}</td>
-              <td>{new Date(meeting.date).toLocaleDateString()}</td>
-              <td>{meeting.time}</td>
-              <td>{meeting.participants.map(p => p.username).join(', ')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      
       {selectedMeeting && (
         <EditMeetingForm
           meeting={selectedMeeting}
