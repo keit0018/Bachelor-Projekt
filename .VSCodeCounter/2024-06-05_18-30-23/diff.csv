@@ -1,0 +1,29 @@
+"filename", "language", "JSON", "JavaScript", "CSS", "comment", "blank", "total"
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\package-lock.json", "JSON", 27, 0, 0, 0, 0, 27
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\package.json", "JSON", 1, 0, 0, 0, 0, 1
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\App.js", "JavaScript", 0, 20, 0, 0, -1, 19
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\assets\styles\Sidebar.css", "CSS", 0, 0, 35, 0, 7, 42
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\EditMeetingsForm.js", "JavaScript", 0, 64, 0, 2, 7, 73
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\Sidebar.js", "JavaScript", 0, 41, 0, 0, 2, 43
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\SignInForm.js", "JavaScript", 0, -3, 0, 0, 0, -3
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\withRole.js", "JavaScript", 0, 15, 0, 0, 5, 20
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\Dashboard.js", "JavaScript", 0, -2, 0, 3, 3, 4
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\Login.js", "JavaScript", 0, 9, 0, -3, 4, 10
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\ManageMeetingsPage.js", "JavaScript", 0, 36, 0, -4, 2, 34
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\MeetingSchedulePage.js", "JavaScript", 0, 75, 0, -1, 5, 79
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\config.js", "JavaScript", 0, 5, 0, 0, 1, 6
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\meetings.js", "JavaScript", 0, 74, 0, 2, 12, 88
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\userController.js", "JavaScript", 0, 45, 0, 1, 7, 53
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\middleware\authentication.js", "JavaScript", 0, 22, 0, 0, 4, 26
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\middleware\checkRole.js", "JavaScript", 0, 9, 0, 0, 2, 11
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\meeting.js", "JavaScript", 0, 10, 0, 0, 3, 13
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\user.js", "JavaScript", 0, 25, 0, 0, 4, 29
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\package-lock.json", "JSON", 509, 0, 0, 0, 0, 509
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\package.json", "JSON", 6, 0, 0, 0, 0, 6
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\meetingRoutes.js", "JavaScript", 0, 11, 0, 2, 4, 17
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\userRoutes.js", "JavaScript", 0, 8, 0, 0, 3, 11
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\scripts\genarateJWT.js", "JavaScript", 0, 3, 0, 0, 0, 3
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\scripts\seedUsers.js", "JavaScript", 0, 29, 0, 0, 5, 34
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\server.js", "JavaScript", 0, 3, 0, 6, 2, 11
+"c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\utils\genarateToken.js", "JavaScript", 0, 11, 0, 2, 4, 17
+"Total", "-", 543, 510, 35, 10, 85, 1183

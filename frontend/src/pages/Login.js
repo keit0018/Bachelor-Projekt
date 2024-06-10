@@ -4,7 +4,7 @@ import axios from 'axios';
 import '../assets/styles/FormContainer.css'; // Import the CSS file for styling
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setAuthenticated, setUserRole }) => {
+const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
   const navigate = useNavigate();
 
   const handleLogin = async (formData) => {
@@ -16,11 +16,15 @@ const Login = ({ setAuthenticated, setUserRole }) => {
 
         console.log(response.data);
         
-        const { token, role } = response.data;
+        const { token, role, communicationUserId, username } = response.data;
+        localStorage.setItem('communicationUserId', communicationUserId);
         localStorage.setItem('token', token);
+        localStorage.setItem('username', username);
         setAuthenticated(true);
         console.log(role);
         setUserRole(role);
+        setCommunicationUserId(communicationUserId);
+        console.log(communicationUserId);
         navigate('/dashboard');
       } else {
         throw new Error('Invalid credentials');

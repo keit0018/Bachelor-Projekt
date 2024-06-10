@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import '../assets/styles/Dashboard.css';
 
 const Dashboard = () => {
   const [nextMeeting, setNextMeeting] = useState(null);
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -15,9 +17,7 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`
           }
         });
-
-        console.log(response);
-
+        
         const meetingsWithDateTime = response.data.map(meeting => {
           const combinedDateTime = new Date(meeting.date);
           const [hours, minutes] = meeting.time.split(':');
@@ -40,9 +40,30 @@ const Dashboard = () => {
     fetchMeetings();
   }, []);
 
-  const handleJoinMeeting = (meetingId) => {
+  const handleJoinMeeting = async (meetingId) => {
     // Implement the logic to join the meeting
-    alert(`Joining meeting with ID: ${meetingId}`);
+    
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:5000/api/meetings/${meetingId}/join`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log(response);
+
+      if (response.status === 200) {
+        // Redirect to the video call component or open it
+        console.log('User can join the meeting');
+        navigate(`/video-call/${meetingId}`);
+      } else {
+        console.error('User is not authorized to join the meeting');
+      }
+    } catch (error) {
+      console.error('Error joining meeting:', error);
+    }
   };
 
   return (

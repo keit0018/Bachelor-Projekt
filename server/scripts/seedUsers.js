@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const config = require('../config'); // Adjust the path as needed
+const config = require('../config/config'); // Adjust the path as needed
+const { CommunicationIdentityClient } = require('@azure/communication-identity');
+
+const connectionString = config.acsConnectionString;
+console.log(connectionString);
+const identityClient = new CommunicationIdentityClient(connectionString);
+
 
 const users = [
   { username: 'admin', password: 'password1', role: 'worker' },
@@ -19,9 +25,17 @@ const seedUsers = async () => {
     console.log('Existing users removed');
 
     for (let user of users) {
-      const newUser = new User(user);
+      const communicationUser = await identityClient.createUser();
+      const communicationUserId = communicationUser.communicationUserId;
+
+      // Create a new user with the communication user ID
+      const newUser = new User({
+        ...user,
+        communicationUserId: communicationUserId
+      });
+
       await newUser.save();
-      console.log(`User ${user.username} created with hashed password: ${newUser.password}`);
+      console.log(`User ${user.username} created with communicationUserId: ${newUser.communicationUserId}`);
     }
     console.log('Users seeded successfully');
   } catch (error) {

@@ -5,7 +5,7 @@ import ManageMeetingsPage from './pages/ManageMeetingsPage';
 import MeetingSchedulePage from './pages/MeetingSchedulePage';
 import SignUp from './pages/Signup';
 import "@fontsource/roboto";
-import VideoCall from './pages/VideoCall';
+import VideoCallPage from './pages/VideoCallPage';
 import RecordingPage from './pages/RecordingPage';
 import SettingsPage from './pages/SettingsPage';
 import Sidebar from './components/Sidebar';
@@ -16,8 +16,9 @@ import withRole from './components/withRole';
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState('');
+  const [communicationUserId,setCommunicationUserId] = useState('');
 
-  const commonProps = { authenticated, userRole };
+  const commonProps = { authenticated, userRole, communicationUserId };
 
   return (
     <div className="App">
@@ -26,7 +27,7 @@ function App() {
          <Router>
             <Sidebar authenticated={authenticated} setAuthenticated={setAuthenticated} userRole={userRole} />
               <Routes>
-                <Route path="/" element={<Login setAuthenticated={setAuthenticated} setUserRole={setUserRole} />} />
+                <Route path="/" element={<Login setAuthenticated={setAuthenticated} setUserRole={setUserRole} setCommunicationUserId={setCommunicationUserId} />} />
                 <Route 
                   path="/dashboard" 
                   element={authenticated ? <Dashboard /> : <Navigate to="/" />} 
@@ -40,8 +41,8 @@ function App() {
                   element={withRole(ManageMeetingsPage, ['worker', 'admin'])(commonProps)} 
                 />
                 <Route 
-                  path="/video-call" 
-                  element={authenticated ? <VideoCall /> : <Navigate to="/" />} 
+                  path="/video-call/:meetingId" 
+                  element={authenticated ? <VideoCallPage  /> : <Navigate to="/" />} 
                 />
                 <Route 
                   path="/recordings" 
