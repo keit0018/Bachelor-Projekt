@@ -23,7 +23,9 @@ const useVideoCall = (meetingId) => {
     try {
       if (!callAgentRef.current) {
         const callClient = new CallClient();
+        console.log(callClient);
         const tokenCredential = new AzureCommunicationTokenCredential(token);
+        console.log(tokenCredential)
         const agent = await callClient.createCallAgent(tokenCredential);
         callAgentRef.current = agent;
         setCallAgent(agent);
