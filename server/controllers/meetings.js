@@ -1,14 +1,17 @@
 const Meeting = require('../models/meeting');
+const { v4: uuidv4 } = require('uuid');
 
 exports.createMeeting = async (req, res) => {
     try {
         const { title, date, time, participants } = req.body;
         const createdBy = req.user.userId;
+        const groupId = uuidv4();
         const meeting = new Meeting({
         title,
         date,
         time,
         participants,
+        groupId,
         createdBy
         });
 

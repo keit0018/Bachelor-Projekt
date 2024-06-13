@@ -5,7 +5,8 @@ const meetingSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   time: { type: String, required: true },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  groupId: { type: String, required: true, unique: true},
 });
 
 const Meeting = mongoose.model('Meeting', meetingSchema);

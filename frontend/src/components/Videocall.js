@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../assets/styles/VideoCall.css';
 import axios from 'axios';
 import {
@@ -7,21 +7,20 @@ import {
   CallClientProvider,
   CallAgentProvider,
   CallProvider,
-  createStatefulCallClient,
   createAzureCommunicationCallAdapter,
 } from '@azure/communication-react';
 import { initializeIcons, registerIcons } from '@fluentui/react';
-import { CallClient } from '@azure/communication-calling';
-import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 import Chat from './Chat';
 import CallingComponents from './CallingComponentsStateful';
+import { getCallAgentInstance, disposeCallAgentInstance } from '../services/callAgentSingleton';
+import { AzureCommunicationTokenCredential } from '@azure/communication-common';
 
 initializeIcons();
 registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
 
 const VideoCall = ({ meetingId }) => {
   const [isChatVisible, setIsChatVisible] = useState(false);
-  const [statefulCallClient, setStatefulCallClient] = useState(null);
+  const [callClient, setCallClient] = useState(null);
   const [callAgent, setCallAgent] = useState(null);
   const [call, setCall] = useState(null);
   const [adapter, setAdapter] = useState(null);
@@ -34,7 +33,11 @@ const VideoCall = ({ meetingId }) => {
   const fetchParticipants = async () => {
     try {
       const meetingResponse = await axios.get(`http://localhost:5000/api/meetings/${meetingId}`);
-      setParticipants([...meetingResponse.data.participants, meetingResponse.data.createdBy]);
+      
+      return{ 
+        participants: [...meetingResponse.data.participants, meetingResponse.data.createdBy],
+        groupId: meetingResponse.data.groupId,
+      };
     } catch (error) {
       console.error('Failed to get meeting:', error);
       throw error;
@@ -51,60 +54,33 @@ const VideoCall = ({ meetingId }) => {
     }
   };
 
-  const initializeCallClient = async () => {
-    try {
-      if (!statefulCallClient) {
-        const client = createStatefulCallClient({ userId: { communicationUserId } });
-        console.log("create new call client: ", client);
-        setStatefulCallClient(client);
-      }
-    } catch (error) {
-      console.error('Failed to create stateful call client:', error);
-    }
-  };
-
-  const tokenCredential = useMemo(async () => {
+  const initializeCallClientAndAgent = async () => {
     try {
       const token = await fetchToken();
-      return new AzureCommunicationTokenCredential(token);
-    } catch (error) {
-      console.error('Failed to create token credential:', error);
-      throw error;
-    }
-  }, [fetchToken]);
-
-  const initializeCallAgent = async () => {
-    try {
-      if (callAgentRef.current) {
-        console.log('Disposing existing call agent');
-        await callAgentRef.current.dispose();
-        callAgentRef.current = null;
-        setCallAgent(null);
-      }
-
-      const credential = await tokenCredential;
-      console.log("new token: ", credential);
-      const callClient = new CallClient();
-      console.log("new call client: ", callClient);
-      const agent = await callClient.createCallAgent(credential, { displayName: displayName });
-      callAgentRef.current = agent;
-      setCallAgent(agent);
+      const { callAgentInstance, callClientInstance } = await getCallAgentInstance(token, displayName);
+      console.log("call agent: ", callAgentInstance, "call client:", callClientInstance);
+      callAgentRef.current = callAgentInstance; // Ensure ref is set
+      setCallAgent(callAgentInstance);
+      setCallClient(callClientInstance);
     } catch (error) {
       console.error('Failed to create call agent:', error.message);
-      throw error;
     }
   };
 
   const joinCall = async () => {
     try {
-      await initializeCallAgent();
-      console.log("call agent now: ", callAgent);
       const agent = callAgentRef.current;
+      console.log("agent at join call: ", agent);
       if (agent) {
-        const call = agent.join({ groupId: meetingId });
-        setCall(call);
+        const { participants: allParticipants, groupId } = await fetchParticipants();
+        setParticipants(allParticipants);
+        console.log("participants: ", allParticipants);
+        console.log("meetingID: ", groupId);
+        console.log("joining...", agent.join({ groupId: groupId }));
+        const newCall = agent.join({ groupId: groupId });
+        setCall(newCall);
 
-        call.on('remoteParticipantsUpdated', (e) => {
+        newCall.on('remoteParticipantsUpdated', (e) => {
           e.added.forEach(participant => {
             const matchingParticipant = participants.find(p => p.communicationUserId === participant.identifier.communicationUserId);
             if (matchingParticipant) {
@@ -133,7 +109,7 @@ const VideoCall = ({ meetingId }) => {
         setAdapter(callAdapter);
       }
     } catch (error) {
-      console.error('Failed to join call:', error.message);
+      console.error('Failed to join call:', error);
       throw error;
     }
   };
@@ -143,28 +119,29 @@ const VideoCall = ({ meetingId }) => {
       await call.hangUp();
       setCall(null);
       setAdapter(null);
-      if (callAgentRef.current) {
-        await callAgentRef.current.dispose();
-        callAgentRef.current = null;
-        setCallAgent(null);
-      }
+    }
+    if (callAgentRef.current) {
+      await disposeCallAgentInstance();
+      callAgentRef.current = null;
+      setCallAgent(null);
     }
   };
 
   useEffect(() => {
-    initializeCallClient();
-  }, [communicationUserId]);
+    initializeCallClientAndAgent();
+  }, [communicationUserId, displayName]);
 
   useEffect(() => {
+    console.log("do we join call? ", callAgentRef.current);
     if (callAgentRef.current) {
-      fetchParticipants().then(() => joinCall());
+      joinCall();
     }
-  }, [meetingId]);
+  }, [meetingId, callAgentRef.current]);
 
   useEffect(() => {
     return () => {
       if (callAgentRef.current) {
-        callAgentRef.current.dispose();
+        disposeCallAgentInstance();
         callAgentRef.current = null;
         setCallAgent(null);
       }
@@ -178,7 +155,7 @@ const VideoCall = ({ meetingId }) => {
   return (
     <FluentThemeProvider>
       {adapter && (
-        <CallClientProvider callClient={statefulCallClient}>
+        <CallClientProvider callClient={callClient}>
           <CallAgentProvider callAgent={callAgent}>
             <CallProvider call={call}>
               <CallingComponents adapter={adapter} />
