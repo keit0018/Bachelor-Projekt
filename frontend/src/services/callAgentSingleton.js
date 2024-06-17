@@ -15,6 +15,7 @@ export const getCallAgentInstance = async (token, displayName) => {
 };
 
 export const disposeCallAgentInstance = async () => {
+  console.log("call agent on leaving call: ", callAgentInstance);
   if (callAgentInstance) {
     await callAgentInstance.dispose();
     callAgentInstance = null;
