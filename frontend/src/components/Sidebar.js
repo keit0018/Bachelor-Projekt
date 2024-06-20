@@ -7,12 +7,14 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { useAuth } from '../contexts/AuthContext';
 
 
 const Sidebar = ({ authenticated, setAuthenticated, userRole }) => {
+  const { logout } = useAuth();
   
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     setAuthenticated(false);
   };
 
@@ -74,4 +76,4 @@ const Sidebar = ({ authenticated, setAuthenticated, userRole }) => {
   )
 }
 
-export default Sidebar
+export default Sidebar;

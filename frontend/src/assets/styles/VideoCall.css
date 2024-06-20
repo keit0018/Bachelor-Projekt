@@ -1,56 +1,43 @@
-.video-call-container {
-  display: flex;
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.call-details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
+  font-size: 1.5em;
+  text-align: center;
   background-color: #f7f7f7;
+  color: #333;
 }
 
-.video-section {
-  flex: 3;
+.spinner-overlay {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.video-boxes {
-  display: flex;
-  flex-wrap: wrap;
+  align-items: center; 
+  background-color: #f7f7f7;
   justify-content: center;
-  gap: 10px;
-  flex-grow: 1;
+  height: 100vh;
 }
 
-.video-box {
-  width: 200px;
-  height: 150px;
-  background: #333;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #444;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.controls button {
-  background: #555;
-  color: white;
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dbdbdb;
+  color: black;
+  width: 30px;
   border: none;
-  padding: 10px;
+  padding: 5px 10px;
+  border-radius: 20px;
   cursor: pointer;
 }
-
-.controls button:hover {
-  background: #777;
-}
-
-
-
-

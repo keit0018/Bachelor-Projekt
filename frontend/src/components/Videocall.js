@@ -1,39 +1,24 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect,useRef , useCallback } from 'react';
 import '../assets/styles/VideoCall.css';
 import axios from 'axios';
-import {
-  FluentThemeProvider,
-  DEFAULT_COMPONENT_ICONS,
-  CallClientProvider,
-  CallAgentProvider,
-  CallProvider,
-  createAzureCommunicationCallAdapter,
-} from '@azure/communication-react';
+import { FluentThemeProvider, DEFAULT_COMPONENT_ICONS, CallComposite } from '@azure/communication-react';
 import { initializeIcons, registerIcons } from '@fluentui/react';
-import Chat from './Chat';
-import CallingComponents from './CallingComponentsStateful';
-import { getCallAgentInstance, disposeCallAgentInstance } from '../services/callAgentSingleton';
+import { createAzureCommunicationCallAdapter } from '@azure/communication-react';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
-import AsyncLock from 'async-lock';
+import '../assets/styles/VideoCall.css';
+import { Oval } from 'react-loader-spinner';
 
 initializeIcons();
 registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
 
 const VideoCall = ({ meetingId }) => {
-  const [isChatVisible, setIsChatVisible] = useState(false);
-  const [callClient, setCallClient] = useState(null);
-  const [callAgent, setCallAgent] = useState(null);
-  const [call, setCall] = useState(null);
   const [adapter, setAdapter] = useState(null);
-  const [participants, setParticipants] = useState([]);
-  const callAgentRef = useRef(null);
-  const callRef = useRef(null);
-  const isLeavingRef = useRef(false);
-  const isInitializedRef = useRef(false);
-  const lockRef = useRef(new AsyncLock());
-
+  const [isFullscreen, setIsFullscreen] = useState(true);
   const communicationUserId = localStorage.getItem('communicationUserId');
   const displayName = localStorage.getItem('username');
+  const [callDetails, setCallDetails] = useState(null);
+  const initializationCounter = useRef(0);
+  const endedcall = useRef(false);
 
   const fetchParticipants = useCallback(async () => {
     try {
@@ -58,170 +43,98 @@ const VideoCall = ({ meetingId }) => {
     }
   }, [communicationUserId]);
 
-  const initializeCallClientAndAgent = useCallback(async () => {
-    if (isInitializedRef.current) {
-      console.log('CallClient and CallAgent already initialized');
-      return;
+  const leaveCall = useCallback(async (callAdapter) => {
+    console.log("leaving call...", callAdapter);
+    if (callAdapter) {
+      await callAdapter.dispose();
+      setAdapter(null);
+      endedcall.current=true;
     }
+  }, []);
 
-    if (callAgentRef.current) {
-      console.log('CallAgent already initialized:', callAgentRef.current);
-      return;
-    }
-
+  const initCallAdapter = useCallback(async () => {
     try {
-      const token = await fetchToken();
-      const { callAgentInstance, callClientInstance } = await getCallAgentInstance(token, displayName);
-      callAgentRef.current = callAgentInstance;
-      setCallAgent(callAgentInstance);
-      setCallClient(callClientInstance);
-      isInitializedRef.current = true;
-    } catch (error) {
-      console.error('Failed to create call agent:', error.message);
-    }
-  }, [fetchToken, displayName]);
-
-  const joinCall = useCallback(async () => {
-    try {
-      const agent = callAgentRef.current;
-      console.log("agent at join call: ", agent);
-      if (agent) {
-        const { participants: allParticipants, groupId } = await fetchParticipants();
-        setParticipants(allParticipants);
-        console.log("participants: ", allParticipants);
-        console.log("groupID: ", groupId);
-        const newCall = agent.join({ groupId: groupId });
-        callRef.current = newCall;
-        setCall(newCall);
-
-        newCall.on('remoteParticipantsUpdated', (e) => {
-          console.log('Remote participants updated:', e);
-
-          e.added.forEach(participant => {
-            console.log('Added participant:', participant);
-            const matchingParticipant = allParticipants.find(p => p.communicationUserId === participant.identifier.communicationUserId);
-
-            if (matchingParticipant) {
-              console.log(`Matching participant found: ${matchingParticipant.username}`);
-              participant.updateDisplayName(matchingParticipant.username);
-            } else {
-              console.log('No matching participant found');
-            }
-          });
-
-          e.removed.forEach(participant => {
-            console.log('Removed participant:', participant);
-          });
-        });
-
+      if(initializationCounter.current<1){
+        console.log("initializing",initializationCounter.current," ", adapter);
+        initializationCounter.current += 1;
+        const { participants, groupId } = await fetchParticipants();
         const token = await fetchToken();
+        const credential = new AzureCommunicationTokenCredential(token);
+
         const callAdapter = await createAzureCommunicationCallAdapter({
           userId: { communicationUserId },
           displayName: displayName || 'User',
-          credential: new AzureCommunicationTokenCredential(token),
-          locator: { groupId: groupId },
+          credential,
+          locator: { groupId },
         });
-
-        callAdapter.on('participantsJoined', (e) => {
-          console.log('Participants joined:', e);
-          e.addedParticipants.forEach(participant => {
-            const matchingParticipant = participants.find(p => p.communicationUserId === participant.communicationUserId);
-            if (matchingParticipant) {
-              console.log(`Matching participant found for joined: ${matchingParticipant.username}`);
-              callAdapter.updateDisplayName(participant.communicationUserId, matchingParticipant.username);
-            } else {
-              console.log('No matching participant found for joined');
-            }
-          });
-        });
-
         setAdapter(callAdapter);
+        setIsFullscreen(true);
+
+        callAdapter.on('callEnded', async () => {
+          console.log('Call ended. Cleaning up...');
+          const endTime = new Date().toLocaleTimeString();
+          const participantNames = participants.map(p => p.username).join(', ');
+          console.log(endTime, participantNames);
+          setCallDetails({
+            participantNames,
+            endTime,
+          });
+          await leaveCall(callAdapter);
+        });
       }
     } catch (error) {
-      console.error('Failed to join call:', error);
-      throw error;
+      console.error('Failed to initialize call adapter:', error.message);
     }
-  }, [fetchParticipants, fetchToken, participants, communicationUserId, displayName]);
+  }, [fetchParticipants, fetchToken, communicationUserId, displayName, adapter, leaveCall]);
 
-  const leaveCall = useCallback(async () => {
-    console.log("leaving call...");
-    if (isLeavingRef.current) {
-      console.log("Already leaving, skipping...");
-      return;
-    }
 
-    isLeavingRef.current = true;
-
-    if (callRef.current) {
-      await callRef.current.hangUp();
-      callRef.current = null;
-      setCall(null);
-      setAdapter(null);
-    }
-    if (callAgentRef.current) {
-      await disposeCallAgentInstance();
-      callAgentRef.current = null;
-      setCallAgent(null);
-      isInitializedRef.current = false;
-    }
-
-    isLeavingRef.current = false;
-  }, []);
 
   useEffect(() => {
-    let didCancel = false;
+    initCallAdapter();
 
-    const init = async () => {
-      await lockRef.current.acquire('init', async (done) => {
-        try {
-          if (!didCancel) {
-            await initializeCallClientAndAgent();
-            if (callAgentRef.current && !didCancel) {
-              await joinCall();
-            }
-          }
-        } finally {
-          done();
-        }
-      });
-    };
+  
+  }, [initCallAdapter]);
 
-    init();
+  if (!adapter && !endedcall.current) {
+    return ( 
+      <div className="spinner-overlay">
+        <Oval
+      visible={true}
+      height="60"
+      width="60"
+      color="#2b242e"
+      ariaLabel="oval-loading"
+      />
+      </div>   
+    );
+  }
 
-    return () => {
-      didCancel = true;
-      lockRef.current.acquire('cleanup', async (done) => {
-        try {
-          await leaveCall();
-        } finally {
-          done();
-        }
-      });
-    };
-  }, [initializeCallClientAndAgent, joinCall, leaveCall, communicationUserId, displayName, meetingId]);
+  if (!adapter && endedcall.current) {
+    return (
+      <div className="call-details">
+        <h3>Call with {callDetails?.participantNames} is exited at {callDetails?.endTime}.</h3>
+      </div>
+    );
+  }
 
-  const handleChatToggle = () => {
-    setIsChatVisible(!isChatVisible);
+  const closeFullscreen = () => {
+    leaveCall(adapter);
+    setIsFullscreen(false);
   };
 
   return (
-    <FluentThemeProvider>
-      {adapter && (
-        <CallClientProvider callClient={callClient}>
-          <CallAgentProvider callAgent={callAgent}>
-            <CallProvider call={call}>
-              <CallingComponents adapter={adapter} />
-            </CallProvider>
-          </CallAgentProvider>
-        </CallClientProvider>
-      )}
-      <div className="controls">
-        <button className="control-button" onClick={handleChatToggle}>
-          Chat
-        </button>
-      </div>
-      {isChatVisible && <Chat isVisible={isChatVisible} onClose={handleChatToggle} />}
-    </FluentThemeProvider>
+    <>
+      {isFullscreen && (
+        <div className="fullscreen-overlay">
+          <FluentThemeProvider>
+            <div style={{ height: '100vh', display: 'flex' }}>
+              <CallComposite adapter={adapter} />
+              <button className="close-button" onClick={closeFullscreen}>X</button>
+            </div>
+          </FluentThemeProvider>
+        </div>
+      )}    
+    </>
   );
 };
 

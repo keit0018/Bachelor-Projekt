@@ -12,9 +12,9 @@ const Dashboard = () => {
     const fetchMeetings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/meetings/participating', {
+        const response = await axios.get('http://localhost:5000/api/meetings/unattended', {
           headers: {
-            Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`
           }
         });
         

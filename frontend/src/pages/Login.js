@@ -3,9 +3,11 @@ import SignInForm from '../components/SignInForm'; // Import the LoginForm compo
 import axios from 'axios';
 import '../assets/styles/FormContainer.css'; // Import the CSS file for styling
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (formData) => {
     try {
@@ -25,6 +27,7 @@ const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
         setUserRole(role);
         setCommunicationUserId(communicationUserId);
         console.log(communicationUserId);
+        login({ communicationUserId, username });
         navigate('/dashboard');
       } else {
         throw new Error('Invalid credentials');

@@ -10,34 +10,19 @@ const ManageMeetingsPage = () => {
 
   useEffect(() => {
     fetchCreatedMeetings();
-    fetchParticipatingMeetings();
   }, []);
 
   const fetchCreatedMeetings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/meetings/created', {
+      const response = await axios.get('http://localhost:5000/api/meetings/unattended', {
         headers: {
-          Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         }
       });
       setCreatedMeetings(response.data);
     } catch (error) {
       console.error('Error fetching created meetings:', error);
-    }
-  };
-
-  const fetchParticipatingMeetings = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/meetings/participating', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setParticipatingMeetings(response.data);
-    } catch (error) {
-      console.error('Error fetching participating meetings:', error);
     }
   };
 
@@ -107,54 +92,6 @@ const ManageMeetingsPage = () => {
       )}
     </div>
   );
-};
-
-// Dummy API call function
-const fakeApiCall = async () => {
-  return [
-    {
-      id: 1,
-      title: 'Team Sync',
-      date: '2024-05-30',
-      time: '10:00 AM',
-      participants: ['Alice', 'Bob', 'Charlie'],
-    },
-    {
-      id: 2,
-      title: 'Client Meeting',
-      date: '2024-06-01',
-      time: '02:00 PM',
-      participants: ['Alice', 'Client A'],
-    },
-    {
-      id: 3,
-      title: 'Client Meeting',
-      date: '2024-06-01',
-      time: '02:00 PM',
-      participants: ['Alice', 'Client A'],
-    },
-    {
-      id: 4,
-      title: 'Client Meeting',
-      date: '2024-06-01',
-      time: '02:00 PM',
-      participants: ['Alice', 'Client A'],
-    },
-    {
-      id: 5,
-      title: 'Client Meeting',
-      date: '2024-06-01',
-      time: '02:00 PM',
-      participants: ['Alice', 'Client A'],
-    },
-    {
-      id: 6,
-      title: 'Client Meeting',
-      date: '2024-06-01',
-      time: '02:00 PM',
-      participants: ['Alice', 'Client A'],
-    }
-  ];
 };
 
 export default ManageMeetingsPage;

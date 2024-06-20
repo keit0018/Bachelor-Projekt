@@ -1,5 +1,6 @@
 const Meeting = require('../models/meeting');
 const { v4: uuidv4 } = require('uuid');
+const Attendance = require('../models/attendence');
 
 exports.createMeeting = async (req, res) => {
     try {
@@ -15,8 +16,18 @@ exports.createMeeting = async (req, res) => {
         createdBy
         });
 
-        await meeting.save();
-        res.status(201).json(meeting);
+        const savedMeeting = await meeting.save();
+
+        const attendanceRecord = new Attendance({
+            meetingId: savedMeeting._id,
+            userId: createdBy,
+            attended: false,
+        });
+      
+        await attendanceRecord.save();
+        console.log(attendanceRecord);
+
+        res.status(201).json(savedMeeting);
     } catch (error) {
     res.status(500).json({ message: 'Server error', error });
     }
@@ -46,6 +57,53 @@ try {
 } catch (error) {
     res.status(500).json({ error: error.message });
 }
+};
+
+exports.getUnattendedMeetings = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        // Find all meetings where the user is a participant or the creator
+        const meetings = await Meeting.find({
+            $or: [
+                { createdBy: userId },
+                { participants: userId }
+            ]
+        });
+
+        // Prepare an array to store meetings that are unattended by the creator
+        let unattendedMeetings = [];
+
+        for (const meeting of meetings) {
+            // Check if the user is the creator or a participant
+            const creatorId = meeting.createdBy.toString();
+            console.log(creatorId);
+
+            // Check attendance for the creator
+            const attendance = await Attendance.findOne({
+                meetingId: meeting._id,
+                userId: creatorId,
+                attended: false
+            });
+
+            // If the attendance record exists and is unattended, add to unattendedMeetings
+            if (attendance) {
+                unattendedMeetings.push(meeting);
+            }
+        }
+
+        console.log(unattendedMeetings);
+
+        // Populate the unattended meetings with participants and createdBy
+        const populatedMeetings = await Meeting.populate(unattendedMeetings, [
+            { path: 'participants', select: 'username' },
+            { path: 'createdBy', select: 'username' }
+        ]);
+
+        res.status(200).json(populatedMeetings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 
