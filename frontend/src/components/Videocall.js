@@ -14,12 +14,13 @@ import Chat from './Chat';
 import CallingComponents from './CallingComponentsStateful';
 import { getCallAgentInstance, disposeCallAgentInstance } from '../services/callAgentSingleton';
 import { AzureCommunicationTokenCredential } from '@azure/communication-common';
-import AsyncLock from 'async-lock';
+import { useAuth } from '../contexts/AuthContext';
 
 initializeIcons();
 registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
 
 const VideoCall = ({ meetingId }) => {
+  const { isLoggedIn } = useAuth();
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [callClient, setCallClient] = useState(null);
   const [callAgent, setCallAgent] = useState(null);
@@ -30,8 +31,7 @@ const VideoCall = ({ meetingId }) => {
   const callRef = useRef(null);
   const isLeavingRef = useRef(false);
   const isInitializedRef = useRef(false);
-  const lockRef = useRef(new AsyncLock());
-
+  const initializationCounter = useRef(0);
   const communicationUserId = localStorage.getItem('communicationUserId');
   const displayName = localStorage.getItem('username');
 
@@ -59,58 +59,49 @@ const VideoCall = ({ meetingId }) => {
   }, [communicationUserId]);
 
   const initializeCallClientAndAgent = useCallback(async () => {
-    if (isInitializedRef.current) {
-      console.log('CallClient and CallAgent already initialized');
-      return;
-    }
-
-    if (callAgentRef.current) {
-      console.log('CallAgent already initialized:', callAgentRef.current);
-      return;
-    }
-
     try {
-      const token = await fetchToken();
-      const { callAgentInstance, callClientInstance } = await getCallAgentInstance(token, displayName);
-      callAgentRef.current = callAgentInstance;
-      setCallAgent(callAgentInstance);
-      setCallClient(callClientInstance);
-      isInitializedRef.current = true;
+      if(initializationCounter.current<1){
+        console.log("current agent; ",isInitializedRef,callAgentRef);
+        isInitializedRef.current = true;
+        const token = await fetchToken();
+        const { callAgentInstance, callClientInstance } = await getCallAgentInstance(token, displayName);
+        callAgentRef.current = callAgentInstance;
+        setCallAgent(callAgentInstance);
+        setCallClient(callClientInstance);
+        initializationCounter.current += 1;
+        console.log(`Initialization count: ${initializationCounter.current}`);
+
+      } else {
+        console.log('CallClient and CallAgent already initialized');
+        return;
+      }
     } catch (error) {
       console.error('Failed to create call agent:', error.message);
     }
   }, [fetchToken, displayName]);
 
   const joinCall = useCallback(async () => {
+    if (!callAgentRef.current) {
+      console.log('CallAgent not initialized');
+      return;
+    }
+
     try {
+      const { participants: allParticipants, groupId } = await fetchParticipants();
+      setParticipants(allParticipants);
       const agent = callAgentRef.current;
-      console.log("agent at join call: ", agent);
-      if (agent) {
-        const { participants: allParticipants, groupId } = await fetchParticipants();
-        setParticipants(allParticipants);
-        console.log("participants: ", allParticipants);
-        console.log("groupID: ", groupId);
-        const newCall = agent.join({ groupId: groupId });
+      console.log("call agent on call: ", agent);
+      if(agent != null ){
+        const newCall = agent.join({ groupId });
         callRef.current = newCall;
         setCall(newCall);
 
         newCall.on('remoteParticipantsUpdated', (e) => {
-          console.log('Remote participants updated:', e);
-
           e.added.forEach(participant => {
-            console.log('Added participant:', participant);
             const matchingParticipant = allParticipants.find(p => p.communicationUserId === participant.identifier.communicationUserId);
-
             if (matchingParticipant) {
-              console.log(`Matching participant found: ${matchingParticipant.username}`);
               participant.updateDisplayName(matchingParticipant.username);
-            } else {
-              console.log('No matching participant found');
             }
-          });
-
-          e.removed.forEach(participant => {
-            console.log('Removed participant:', participant);
           });
         });
 
@@ -119,18 +110,14 @@ const VideoCall = ({ meetingId }) => {
           userId: { communicationUserId },
           displayName: displayName || 'User',
           credential: new AzureCommunicationTokenCredential(token),
-          locator: { groupId: groupId },
+          locator: { groupId },
         });
 
         callAdapter.on('participantsJoined', (e) => {
-          console.log('Participants joined:', e);
           e.addedParticipants.forEach(participant => {
             const matchingParticipant = participants.find(p => p.communicationUserId === participant.communicationUserId);
             if (matchingParticipant) {
-              console.log(`Matching participant found for joined: ${matchingParticipant.username}`);
               callAdapter.updateDisplayName(participant.communicationUserId, matchingParticipant.username);
-            } else {
-              console.log('No matching participant found for joined');
             }
           });
         });
@@ -138,12 +125,12 @@ const VideoCall = ({ meetingId }) => {
         setAdapter(callAdapter);
       }
     } catch (error) {
-      console.error('Failed to join call:', error);
+      console.error('Failed to join call:', error.message);
       throw error;
     }
   }, [fetchParticipants, fetchToken, participants, communicationUserId, displayName]);
 
-  const leaveCall = useCallback(async () => {
+  const leaveCall = useCallback(async (isLogout) => {
     console.log("leaving call...");
     if (isLeavingRef.current) {
       console.log("Already leaving, skipping...");
@@ -153,52 +140,52 @@ const VideoCall = ({ meetingId }) => {
     isLeavingRef.current = true;
 
     if (callRef.current) {
+      console.log("waiting on hangup... ");
       await callRef.current.hangUp();
+      console.log("user hung up... ");
       callRef.current = null;
       setCall(null);
       setAdapter(null);
     }
+
     if (callAgentRef.current) {
+      console.log("awaiting to dispose call agent...");
       await disposeCallAgentInstance();
       callAgentRef.current = null;
       setCallAgent(null);
       isInitializedRef.current = false;
     }
 
+    if (isLogout) {
+      localStorage.removeItem('communicationUserId');
+      localStorage.removeItem('username');
+    }
+
     isLeavingRef.current = false;
   }, []);
 
   useEffect(() => {
-    let didCancel = false;
-
+    console.log("islogged in: ", isLoggedIn);
     const init = async () => {
-      await lockRef.current.acquire('init', async (done) => {
-        try {
-          if (!didCancel) {
-            await initializeCallClientAndAgent();
-            if (callAgentRef.current && !didCancel) {
-              await joinCall();
-            }
-          }
-        } finally {
-          done();
-        }
-      });
+      if(!isInitializedRef.current){
+        await initializeCallClientAndAgent();
+      }
+
+      if (callAgentRef.current) {
+        await joinCall();
+      }
     };
 
     init();
 
     return () => {
-      didCancel = true;
-      lockRef.current.acquire('cleanup', async (done) => {
-        try {
-          await leaveCall();
-        } finally {
-          done();
-        }
-      });
+      if (!isLoggedIn) {
+        leaveCall(true); // Pass true to indicate logout
+      } else {
+        leaveCall(false);
+      }
     };
-  }, [initializeCallClientAndAgent, joinCall, leaveCall, communicationUserId, displayName, meetingId]);
+  }, [initializeCallClientAndAgent, joinCall, leaveCall, isLoggedIn, communicationUserId, displayName, meetingId]);
 
   const handleChatToggle = () => {
     setIsChatVisible(!isChatVisible);
