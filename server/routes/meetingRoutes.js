@@ -8,8 +8,8 @@ const authorizeMeetingAccess = require('../middleware/AuthorizeMeetingAccess');
 // Route to create a new meeting
 router.post('/', authenticate,checkRole(['worker', 'admin']), meetingsController.createMeeting);
 // Route to get all meetings
-router.get('/created', authenticate, checkRole(['worker', 'admin']), meetingsController.getCreatedMeetings);
-router.get('/participating', authenticate, meetingsController.getParticipatingMeetings);
+
+router.get('/unattended', authenticate,meetingsController.getUnattendedMeetings);
 
 //get meetings by id: 
 

@@ -7,6 +7,7 @@ const config = require('./config/config');
 const bodyParser = require('body-parser');
 const meetingRoutes = require('./routes/meetingRoutes');
 const communicationRoutes = require('./routes/communicationRoutes');
+const attendenceRoutes = require('./routes/attendenceRoutes');
 require('dotenv').config();
 
 //creating express server
@@ -32,8 +33,6 @@ app.get('/set-cookie', (req, res) => {
   res.send('Cookie is set');
 });
 
-
-
 //connecting to database
 mongoose.connect(config.mongoUri, {
   useNewUrlParser: true,
@@ -41,10 +40,11 @@ mongoose.connect(config.mongoUri, {
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
-//after connecting use this. 
+//Routes. 
 app.use('/api/users', userRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/communication', communicationRoutes);
+app.use('/api/attendance', attendenceRoutes);
 
 
 //confirmation that server is running
