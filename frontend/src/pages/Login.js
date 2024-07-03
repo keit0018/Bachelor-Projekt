@@ -11,7 +11,7 @@ const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
 
   const handleLogin = async (formData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', formData);
+      const response = await axios.post('https://localhost:5000/api/users/login', formData);
 
 
       if (response.status === 200) {

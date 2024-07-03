@@ -2,6 +2,9 @@ const express = require('express');
 const { createUserAndToken } = require('./acs');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const userRoutes = require('./routes/userRoutes');
 const config = require('./config/config');
 const bodyParser = require('body-parser');
@@ -15,9 +18,14 @@ const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json());
 
+const sslOptions = {
+  key: fs.readFileSync(path.resolve('C:/Users/kbiro/Documents/SSL_certificates/localhost-key.pem')),
+  cert: fs.readFileSync(path.resolve('C:/Users/kbiro/Documents/SSL_certificates/localhost.pem'))
+};
+
 //middleware 
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with your frontend URL
+  origin: 'https://localhost:3000', // Replace with your frontend URL
   credentials: true, // Allow cookies to be sent with the requests
 }));
 
@@ -48,6 +56,6 @@ app.use('/api/attendance', attendenceRoutes);
 
 
 //confirmation that server is running
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+https.createServer(sslOptions, app).listen(port, () => {
+  console.log(`HTTPS Server is running on port ${port}`);
 });

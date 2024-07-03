@@ -12,7 +12,7 @@ const Dashboard = () => {
     const fetchMeetings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/meetings/unattended', {
+        const response = await axios.get('https://localhost:5000/api/meetings/unattended', {
           headers: {
               Authorization: `Bearer ${token}`
           }
@@ -46,7 +46,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/meetings/${meetingId}/join`, {
+      const response = await axios.get(`https://localhost:5000/api/meetings/${meetingId}/join`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

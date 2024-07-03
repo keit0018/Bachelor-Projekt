@@ -9,7 +9,7 @@ const useVideoCall = (meetingId) => {
 
   const fetchParticipants = useCallback(async () => {
     try {
-      const meetingResponse = await axios.get(`http://localhost:5000/api/meetings/${meetingId}`);
+      const meetingResponse = await axios.get(`https://localhost:5000/api/meetings/${meetingId}`);
       return {
         participants: meetingResponse.data.participants,
         createdBy: meetingResponse.data.createdBy,

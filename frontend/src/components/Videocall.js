@@ -22,7 +22,7 @@ const VideoCall = ({ meetingId }) => {
 
   const fetchParticipants = useCallback(async () => {
     try {
-      const meetingResponse = await axios.get(`http://localhost:5000/api/meetings/${meetingId}`);
+      const meetingResponse = await axios.get(`https://localhost:5000/api/meetings/${meetingId}`);
       return {
         participants: [...meetingResponse.data.participants, meetingResponse.data.createdBy],
         groupId: meetingResponse.data.groupId,
@@ -35,7 +35,7 @@ const VideoCall = ({ meetingId }) => {
 
   const fetchToken = useCallback(async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/communication/getToken', { communicationUserId });
+      const response = await axios.post('https://localhost:5000/api/communication/getToken', { communicationUserId });
       return response.data.token;
     } catch (error) {
       console.error('Failed to fetch token:', error);

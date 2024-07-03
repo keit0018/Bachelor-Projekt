@@ -15,7 +15,7 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
       const fetchSearchResults = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get(`http://localhost:5000/api/users/search?query=${participantSearch}`, {
+          const response = await axios.get(`https://localhost:5000/api/users/search?query=${participantSearch}`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -72,7 +72,7 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
   
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`http://localhost:5000/api/meetings/${meeting._id}`, updatedMeeting, {
+      const response = await axios.put(`https://localhost:5000/api/meetings/${meeting._id}`, updatedMeeting, {
         headers: {
           Authorization: `Bearer ${token}`
         }

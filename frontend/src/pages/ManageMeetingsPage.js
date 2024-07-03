@@ -15,7 +15,7 @@ const ManageMeetingsPage = () => {
   const fetchCreatedMeetings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/meetings/unattended', {
+      const response = await axios.get('https://localhost:5000/api/meetings/unattended', {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ const ManageMeetingsPage = () => {
   const handleDelete = async (meetingId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/meetings/${meetingId}`, {
+      await axios.delete(`https://localhost:5000/api/meetings/${meetingId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

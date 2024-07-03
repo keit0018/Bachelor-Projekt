@@ -18,7 +18,7 @@ const MeetingSchedulePage = () => {
       const fetchSearchResults = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get(`http://localhost:5000/api/users/search?query=${participantSearch}`, {
+          const response = await axios.get(`https://localhost:5000/api/users/search?query=${participantSearch}`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -69,7 +69,7 @@ const MeetingSchedulePage = () => {
       const token = localStorage.getItem('token');
       const userId = JSON.parse(atob(token.split('.')[1]))._id; // Decode the token to get the user ID
 
-      await axios.post('http://localhost:5000/api/meetings', {
+      await axios.post('https://localhost:5000/api/meetings', {
         ...meetingData,
         createdBy: userId
       }, {
