@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../assets/styles/RecordingPage.css';
 
-const mockRecordings = [
+/*const mockRecordings = [
   {
     id: 1,
     title: 'Team Meeting',
@@ -13,34 +14,45 @@ const mockRecordings = [
     url: 'https://www.w3schools.com/html/movie.mp4',
   },
   // Add more mock recordings as needed
-];
+];*/
 
 const RecordingPage = () => {
   const [recordings, setRecordings] = useState([]);
   const [selectedRecording, setSelectedRecording] = useState(null);
 
   useEffect(() => {
-    // Mocking the API call to fetch recordings
-    setTimeout(() => {
-      setRecordings(mockRecordings);
-    }, 1000); // Simulate a network delay
+    async function fetchRecordings() {
+      try {
+        const userId = localStorage.getItem('userId');
+        console.log(userId);
+        const response = await axios.get('https://localhost:5000/api/recordings/getRecordings', {
+          headers: {
+            'userId': userId
+          }
+        });
+        setRecordings(response.data);
+      } catch (error) {
+        console.error('Failed to fetch recordings:', error);
+      }
+    }
+
+    fetchRecordings();
   }, []);
 
-  const handlePlayRecording = (recordingUrl) => {
-    setSelectedRecording(recordingUrl);
-  };
-
-  const handleDownloadRecording = (recordingUrl) => {
-    const link = document.createElement('a');
-    link.href = recordingUrl;
-    link.download = 'recording.mp4';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleDeleteRecording = (recordingId) => {
-    setRecordings(recordings.filter(recording => recording.id !== recordingId));
+  const handlePlayRecording = async (recordingId) => {
+    try {
+      console.log(recordingId);
+      const response = await axios.get('https://localhost:5000/api/recordings/getSecureVideoLink', {
+        params: { recordingId },
+        headers: {
+          'user-id': localStorage.getItem('userId')
+        }
+      });
+      console.log(response.data.sasUrl);
+      setSelectedRecording(response.data.sasUrl);
+    } catch (error) {
+      console.error('Failed to fetch SAS URL:', error);
+    }
   };
 
   return (
@@ -48,11 +60,9 @@ const RecordingPage = () => {
       <h2>Recorded Meetings</h2>
       <div className="recording-list">
         {recordings.map((recording) => (
-          <div key={recording.id} className="recording-item">
-            <span>{recording.title}</span>
-            <button onClick={() => handlePlayRecording(recording.url)}>Play</button>
-            <button onClick={() => handleDownloadRecording(recording.url)}>Download</button>
-            <button onClick={() => handleDeleteRecording(recording.id)}>Delete</button>
+          <div key={recording._id} className="recording-item">
+            <span>{recording.endTime || 'Untitled Meeting'}</span>
+            <button onClick={() => handlePlayRecording(recording.recordingId)}>Play</button>
           </div>
         ))}
       </div>

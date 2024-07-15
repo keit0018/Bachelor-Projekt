@@ -18,10 +18,12 @@ const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
 
         console.log(response.data);
         
-        const { token, role, communicationUserId, username } = response.data;
+        const { token, role, communicationUserId, username, userId } = response.data;
         localStorage.setItem('communicationUserId', communicationUserId);
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
+        localStorage.setItem('userId', userId);
+        console.log("userId: ", userId);
         setAuthenticated(true);
         console.log(role);
         setUserRole(role);

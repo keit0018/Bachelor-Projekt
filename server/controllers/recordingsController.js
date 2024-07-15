@@ -1,13 +1,31 @@
 const callAutomationClient = require('../service/callAutomationClient');
 const Recording = require('../models/recordings');
-const { BlobServiceClient } = require('@azure/storage-blob');
+const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential  } = require('@azure/storage-blob');
 const config = require('../config/config');
 
 const client = callAutomationClient;
 const containerName = "videomeetingrecordings";
-const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobConnectionString); // Replace with your container name
+const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobConnectionString); 
 const containerClient = blobServiceClient.getContainerClient(containerName);
+const sharedKeyCredential = new StorageSharedKeyCredential(config.blobStorageAccountName, config.blobStorageAccountKey);
 
+
+async function generateBlobSasUrl(blobUrl) {
+  const blobName = blobUrl.replace('https://videoplatformoptagelser.blob.core.windows.net/videomeetingrecordings/','');
+  console.log("blobname: ",blobName)
+  const blobClient = containerClient.getBlobClient(blobName);
+  const expiresOn = new Date(new Date().valueOf() + 3600 * 1000); // SAS token expires in 1 hour
+
+  const sasToken = generateBlobSASQueryParameters({
+    containerName,
+    blobName,
+    permissions: BlobSASPermissions.parse("r"), 
+    expiresOn
+  }, sharedKeyCredential).toString();
+  console.log("sas url: ", blobClient,"sas token: ", sasToken);
+
+  return `${blobClient.url}?${sasToken}`;
+}
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -136,3 +154,33 @@ exports.stopRecording = async function (req, res) {
     res.status(500).json(e.message);
   }
 };
+
+exports.getRecordingsForUser = async function (req, res) {
+  try {
+    const userId = req.headers['userid'];
+    console.log(userId);
+    const recordings = await Recording.find({ createdby: userId });
+    res.json(recordings);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).json(e.message);
+  }
+};
+
+exports.getVideoLink = async function(req,res){
+  try {
+    const { recordingId } = req.query;
+    const recording = await Recording.findOne({ recordingId });
+
+    if (!recording) {
+      return res.status(404).json("Recording not found");
+    }
+
+    const sasUrl = await generateBlobSasUrl(recording.recordingurl);
+    console.log(sasUrl);
+    res.json({ sasUrl });
+    
+  } catch (e) {
+    res.status(500).json(e.message); 
+  }
+}
