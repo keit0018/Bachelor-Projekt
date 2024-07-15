@@ -1,34 +1,138 @@
+const callAutomationClient = require('../service/callAutomationClient');
 const Recording = require('../models/recordings');
-const { CallAutomationClient } = require('@azure/communication-call-automation');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const config = require('../config/config');
 
-const acsConnectionString = config.acsConnectionString;
-const blobConnectionString = config.blobConnectionString;
-const callAutomationClient = new CallAutomationClient(acsConnectionString);
-const blobServiceClient = BlobServiceClient.fromConnectionString(blobConnectionString);
+const client = callAutomationClient;
+const containerName = "videomeetingrecordings";
+const blobServiceClient = BlobServiceClient.fromConnectionString(config.blobConnectionString); // Replace with your container name
+const containerClient = blobServiceClient.getContainerClient(containerName);
 
-exports.startRecording = async (req, res) => {
-    const { meetingId, serverCallId, userId, createdBy } = req.body;
-  
-    const callLocator = { id: serverCallId, kind: "serverCallLocator" };
-  
-    const options = {
-      callLocator: callLocator,
-      recordingContent: "composite", // Use composite for video + audio
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
+
+async function getRecordingUrlFromBlobStorage(date, callId) {
+  try{
+    const prefix = `${date}/${callId}`;
+    // List blobs under the prefix to find the folder
+    const blobs = containerClient.listBlobsFlat();
+    for await (const item of blobs) {
+      let currentItem = item.name.toString();
+      if(currentItem.includes(prefix) && currentItem.endsWith('mp4')){
+        const blobClient = containerClient.getBlobClient(item.name);
+        console.log("item: ", item); // Debugging items
+        console.log('MP4 file found: ', blobClient.url);
+        console.log("item: ", item);
+        return blobClient.url;
+      }
+    }
+
+    return null;
+
+  } catch(error){
+    console.log(error)
+  }
+}
+
+async function pollForRecordingUrl(date, callId, maxRetries = 10, delay = 5000) {
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    const recordingUrl = await getRecordingUrlFromBlobStorage(date, callId);
+    if (recordingUrl) {
+      return recordingUrl;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, delay));
+    retries += 1;
+  }
+
+  throw new Error('Recording URL not found after maximum retries.');
+}
+
+exports.startRecording = async function (req, res) {
+  try {
+    const { serverCallId, meetingId, createdBy } = req.body;
+
+    if (!serverCallId || String(serverCallId).trim() === "") {
+      return res.status(400).json("serverCallId is invalid");
+    }
+
+    let recording = await Recording.findOne({ meetingId });
+
+    if (recording) {
+      // Delete the existing recording
+      await Recording.deleteOne({ meetingId });
+      console.log(`Deleted existing recording for meeting ID: ${meetingId}`);
+    }
+
+    var locator = { id: serverCallId, kind: "serverCallLocator" };
+    var options = {
+      callLocator: locator,
+      recordingContent: "audioVideo",
       recordingChannel: "mixed",
-      recordingFormat: "mp4", // Use mp4 for video + audio
-      recordingStateCallbackEndpointUrl: "YOUR_CALLBACK_URL",
+      recordingFormat: "mp4",
       recordingStorage: {
         recordingStorageKind: "azureBlobStorage",
         recordingDestinationContainerUrl: config.blobContainerURL
       }
     };
-  
-    try {
-      const response = await callAutomationClient.getCallRecording().start(options);
-      res.status(200).send({ message: 'Recording started', recordingId: response.recordingId });
-    } catch (error) {
-      res.status(500).send({ message: 'Failed to start recording', error: error.message });
+    var startRecordingRequestOutput = await client.getCallRecording().start(options);
+    let recordingId = startRecordingRequestOutput.recordingId;
+   
+    console.log("START CALL RECORDING: ", recordingId);
+    // Save the initial recording metadata to MongoDB
+
+
+    recording = new Recording({
+      meetingId,
+      createdby: createdBy,
+      endTime: null, // Initial value, to be updated when recording stops
+      recordingId: recordingId
+    });
+    await recording.save();
+    
+
+    res.json(startRecordingRequestOutput);
+  } catch (e) {
+    res.status(500).json(e.message);
+  }
+};
+
+exports.stopRecording = async function (req, res) {
+  try {
+    const { meetingId, callId } = req.body;
+
+    console.log("callid: ", callId);
+
+    const recording = await Recording.findOne({ meetingId });
+
+    if (!recording) {
+      return res.status(404).json("Recording not found for meetingId: " + recording);
     }
-  };
+    
+    await client.getCallRecording().stop(recording.recordingId);
+    
+    let currentdate = new Date();
+    recording.endTime = currentdate.toISOString();
+
+    let linkdate = formatDate(currentdate);
+    const recordUrl = await pollForRecordingUrl(linkdate, callId);
+    recording.recordingurl = recordUrl;
+    await recording.save();
+
+    recording.recordingurl = recordUrl;
+    await recording.save();
+
+    res.json("Recording stopped successfully");
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).json(e.message);
+  }
+};

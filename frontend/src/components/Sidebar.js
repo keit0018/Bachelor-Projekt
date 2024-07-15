@@ -31,12 +31,6 @@ const Sidebar = ({ authenticated, setAuthenticated, userRole }) => {
                 </Link>
               </li>
               
-                  <li>
-                    <Link className='linkText' to="/video-call">
-                        <VideocamIcon className='icon'/>
-                        <span className="linkText">Video Call</span>
-                    </Link>
-                  </li>
               {['worker', 'admin'].includes(userRole) && (
                 <>    
                   <li>

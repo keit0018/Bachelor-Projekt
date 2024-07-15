@@ -5,7 +5,6 @@ import EditMeetingForm from '../components/EditMeetingsForm';
 
 const ManageMeetingsPage = () => {
   const [createdMeetings, setCreatedMeetings] = useState([]);
-  const [participatingMeetings, setParticipatingMeetings] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
 
   useEffect(() => {

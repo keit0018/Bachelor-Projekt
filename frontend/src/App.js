@@ -44,6 +44,7 @@ function App() {
                   path="/video-call/:meetingId" 
                   element={authenticated ? <VideoCallPage  /> : <Navigate to="/" />} 
                 />
+                
                 <Route 
                   path="/recordings" 
                   element={withRole(RecordingPage, ['worker', 'admin'])(commonProps)} 

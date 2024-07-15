@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const meetingRoutes = require('./routes/meetingRoutes');
 const communicationRoutes = require('./routes/communicationRoutes');
 const attendenceRoutes = require('./routes/attendenceRoutes');
+const recordingRoutes = require('./routes/recordingRoutes');
 require('dotenv').config();
 
 //creating express server
@@ -53,6 +54,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/communication', communicationRoutes);
 app.use('/api/attendance', attendenceRoutes);
+app.use('/api/recordings', recordingRoutes);
 
 
 //confirmation that server is running

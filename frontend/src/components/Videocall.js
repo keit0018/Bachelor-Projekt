@@ -16,9 +16,11 @@ const VideoCall = ({ meetingId }) => {
   const [isFullscreen, setIsFullscreen] = useState(true);
   const communicationUserId = localStorage.getItem('communicationUserId');
   const displayName = localStorage.getItem('username');
-  const [callDetails, setCallDetails] = useState(null);
+  const [callDetails, setCallDetails] = useState(null); 
   const initializationCounter = useRef(0);
+  const initializationRecordingCounter = useRef(0);
   const endedcall = useRef(false);
+  const endRecording = useRef(0); 
 
   const fetchParticipants = useCallback(async () => {
     try {
@@ -26,6 +28,7 @@ const VideoCall = ({ meetingId }) => {
       return {
         participants: [...meetingResponse.data.participants, meetingResponse.data.createdBy],
         groupId: meetingResponse.data.groupId,
+        createdBy: meetingResponse.data.createdBy
       };
     } catch (error) {
       console.error('Failed to get meeting:', error);
@@ -48,16 +51,44 @@ const VideoCall = ({ meetingId }) => {
     if (callAdapter) {
       await callAdapter.dispose();
       setAdapter(null);
-      endedcall.current=true;
+      endedcall.current = true;
     }
-  }, []);
+  }, [ ]);
+
+  const startRecording = async (serverCallId, createdBy) => {
+    try {
+      if(initializationRecordingCounter.current<1){
+        initializationRecordingCounter.current+=1;
+        await axios.post('https://localhost:5000/api/recordings/startRecording', {
+          serverCallId,
+          meetingId,
+          createdBy
+        });
+      }
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+    }
+  };
+
+  const stopRecording = async (callId) => {
+    try {
+      console.log("call recording ending", endRecording.current)
+      if(endRecording.current<1){
+        endRecording.current+=1;
+        console.log("before stoping call: ", callId)
+        await axios.post('https://localhost:5000/api/recordings/stopRecording', { meetingId, callId }); 
+      }
+    } catch (error) {
+      console.error('Failed to stop recording:', error);
+    }
+  };
 
   const initCallAdapter = useCallback(async () => {
     try {
       if(initializationCounter.current<1){
         console.log("initializing",initializationCounter.current," ", adapter);
         initializationCounter.current += 1;
-        const { participants, groupId } = await fetchParticipants();
+        const { createdBy, participants, groupId } = await fetchParticipants();
         const token = await fetchToken();
         const credential = new AzureCommunicationTokenCredential(token);
 
@@ -70,6 +101,21 @@ const VideoCall = ({ meetingId }) => {
         setAdapter(callAdapter);
         setIsFullscreen(true);
 
+        callAdapter.onStateChange(async () => {
+          const call = callAdapter.getState().call;
+          if (call && call.state === 'Connected') {
+
+            call.info.getServerCallId().then(async (serverCallId) => {
+                console.log('Server Call ID:', serverCallId);
+                await startRecording(serverCallId, createdBy);
+              }).catch(err => {
+                console.log('Failed to get Server Call ID:', err);
+            });
+          } else if (call && call.state ==='Disconnecting'){
+            await stopRecording(call.id);
+          }
+        });
+
         callAdapter.on('callEnded', async () => {
           console.log('Call ended. Cleaning up...');
           const endTime = new Date().toLocaleTimeString();
@@ -79,7 +125,7 @@ const VideoCall = ({ meetingId }) => {
             participantNames,
             endTime,
           });
-          await leaveCall(callAdapter);
+          await leaveCall(callAdapter);       
         });
       }
     } catch (error) {
