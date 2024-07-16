@@ -58,7 +58,7 @@ async function getRecordingUrlFromBlobStorage(date, callId) {
   }
 }
 
-async function pollForRecordingUrl(date, callId, maxRetries = 10, delay = 5000) {
+async function pollForRecordingUrl(date, callId, maxRetries = 10, delay = 10000) {
   let retries = 0;
 
   while (retries < maxRetries) {

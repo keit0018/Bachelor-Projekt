@@ -12,6 +12,7 @@ const meetingRoutes = require('./routes/meetingRoutes');
 const communicationRoutes = require('./routes/communicationRoutes');
 const attendenceRoutes = require('./routes/attendenceRoutes');
 const recordingRoutes = require('./routes/recordingRoutes');
+const logAction = require('./middleware/logAction');
 require('dotenv').config();
 
 //creating express server
@@ -31,7 +32,7 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-
+app.use(logAction);
 
 app.get('/set-cookie', (req, res) => {
   res.cookie('myCookie', 'cookieValue', {

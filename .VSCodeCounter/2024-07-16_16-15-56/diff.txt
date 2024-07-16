@@ -1,0 +1,87 @@
+Date : 2024-07-16 16:15:56
+Directory : c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt
+Total : 41 files,  3509 codes, 24 comments, 130 blanks, all 3663 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          4 |      3,100 |          0 |          0 |      3,100 |
+| JavaScript |         33 |        394 |         24 |        134 |        552 |
+| CSS        |          3 |         12 |          0 |         -4 |          8 |
+| Properties |          1 |          3 |          0 |          0 |          3 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                   |         41 |      3,509 |         24 |        130 |      3,663 |
+| frontend                                                                                            |         19 |      2,958 |         11 |         18 |      2,987 |
+| frontend (Files)                                                                                    |          3 |      2,921 |          0 |          0 |      2,921 |
+| frontend\src                                                                                        |         16 |         37 |         11 |         18 |         66 |
+| frontend\src (Files)                                                                                |          2 |          4 |          0 |          3 |          7 |
+| frontend\src\assets                                                                                 |          3 |         12 |          0 |         -4 |          8 |
+| frontend\src\assets\styles                                                                          |          3 |         12 |          0 |         -4 |          8 |
+| frontend\src\components                                                                             |          3 |         68 |          0 |         14 |         82 |
+| frontend\src\contexts                                                                               |          1 |         25 |          0 |          6 |         31 |
+| frontend\src\hooks                                                                                  |          1 |         42 |          0 |          5 |         47 |
+| frontend\src\pages                                                                                  |          6 |       -114 |         11 |         -6 |       -109 |
+| server                                                                                              |         22 |        551 |         13 |        112 |        676 |
+| server (Files)                                                                                      |          4 |        192 |         -1 |          2 |        193 |
+| server\config                                                                                       |          1 |         12 |          0 |          1 |         13 |
+| server\controllers                                                                                  |          5 |        247 |         10 |         73 |        330 |
+| server\middleware                                                                                   |          1 |         29 |          0 |          9 |         38 |
+| server\models                                                                                       |          4 |         20 |          0 |          6 |         26 |
+| server\routes                                                                                       |          4 |         25 |          3 |         11 |         39 |
+| server\scripts                                                                                      |          1 |          9 |          1 |          4 |         14 |
+| server\service                                                                                      |          2 |         17 |          0 |          6 |         23 |
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                            | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\.env                                 | Properties |          3 |          0 |          0 |          3 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\package-lock.json                    | JSON       |      2,913 |          0 |          0 |      2,913 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\package.json                         | JSON       |          5 |          0 |          0 |          5 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\App.js                           | JavaScript |          1 |          0 |          1 |          2 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\assets\styles\Chat.css           | CSS        |         42 |          0 |          6 |         48 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\assets\styles\VideoCall.css      | CSS        |        -35 |          0 |        -10 |        -45 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\assets\styles\VideoCallPage.css  | CSS        |          5 |          0 |          0 |          5 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\Chat.js               | JavaScript |         36 |          0 |          4 |         40 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\Sidebar.js            | JavaScript |         -4 |          0 |          0 |         -4 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\components\Videocall.js          | JavaScript |         36 |          0 |         10 |         46 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\contexts\AuthContext.js          | JavaScript |         25 |          0 |          6 |         31 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\hooks\UseVideoCall.js            | JavaScript |         42 |          0 |          5 |         47 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\index.js                         | JavaScript |          3 |          0 |          2 |          5 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\Dashboard.js               | JavaScript |         17 |          1 |          3 |         21 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\Login.js                   | JavaScript |          9 |          0 |          0 |          9 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\ManageMeetingsPage.js      | JavaScript |        -61 |         -1 |         -2 |        -64 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\RecordingPage.js           | JavaScript |          0 |         11 |         -1 |         10 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\VideoCall.js               | JavaScript |        -99 |          0 |        -10 |       -109 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\frontend\src\pages\VideoCallPage.js           | JavaScript |         20 |          0 |          4 |         24 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\config.js                              | JavaScript |         -5 |          0 |         -1 |         -6 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\config\config.js                       | JavaScript |         12 |          0 |          1 |         13 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\attendenceController.js    | JavaScript |         20 |          0 |          8 |         28 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\communicationController.js | JavaScript |         22 |          1 |         10 |         33 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\meetings.js                | JavaScript |         59 |          6 |         17 |         82 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\recordingsController.js    | JavaScript |        145 |          3 |         38 |        186 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\controllers\userController.js          | JavaScript |          1 |          0 |          0 |          1 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\middleware\AuthorizeMeetingAccess.js   | JavaScript |         29 |          0 |          9 |         38 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\attendence.js                   | JavaScript |          8 |          0 |          3 |         11 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\meeting.js                      | JavaScript |          1 |          0 |          0 |          1 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\recordings.js                   | JavaScript |         10 |          0 |          3 |         13 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\models\user.js                         | JavaScript |          1 |          0 |          0 |          1 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\package-lock.json                      | JSON       |        176 |          0 |          0 |        176 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\package.json                           | JSON       |          6 |          0 |          0 |          6 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\attendenceRoutes.js             | JavaScript |          7 |          0 |          3 |         10 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\communicationRoutes.js          | JavaScript |          5 |          0 |          2 |          7 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\meetingRoutes.js                | JavaScript |          4 |          3 |          4 |         11 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\routes\recordingRoutes.js              | JavaScript |          9 |          0 |          2 |         11 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\scripts\seedUsers.js                   | JavaScript |          9 |          1 |          4 |         14 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\server.js                              | JavaScript |         15 |         -1 |          3 |         17 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\service\callAutomationClient.js        | JavaScript |          6 |          0 |          3 |          9 |
+| c:\Users\kbiro\Desktop\Projects 2024\Bachelor Projekt\server\service\communicationService.js        | JavaScript |         11 |          0 |          3 |         14 |
+| Total                                                                                               |            |      3,509 |         24 |        130 |      3,663 |
++-----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
