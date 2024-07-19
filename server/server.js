@@ -27,12 +27,12 @@ const sslOptions = {
 
 //middleware 
 app.use(cors({
-  origin: 'https://localhost:3000', // Replace with your frontend URL
-  credentials: true, // Allow cookies to be sent with the requests
+  origin: 'https://localhost:3000', 
+  credentials: true, 
 }));
 
 app.use(bodyParser.json());
-app.use(logAction);
+//app.use(logAction);
 
 app.get('/set-cookie', (req, res) => {
   res.cookie('myCookie', 'cookieValue', {

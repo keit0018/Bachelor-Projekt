@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../assets/styles/Dashboard.css';
+import ConsentModal from '../components/ConsentModal';
 
 const Dashboard = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [nextMeeting, setNextMeeting] = useState(null);
+  const currentMeeting = useRef(null);
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
   const navigate = useNavigate();
 
@@ -41,11 +44,16 @@ const Dashboard = () => {
   }, []);
 
   const handleJoinMeeting = async (meetingId) => {
-    // Implement the logic to join the meeting
-    
+    setIsModalOpen(true);
+    currentMeeting.current = meetingId;
 
+  };
+
+  const handleProceed = async () => {
     try {
       const token = localStorage.getItem('token');
+      const meetingId = currentMeeting.current;
+      console.log(meetingId)
       const response = await axios.get(`https://localhost:5000/api/meetings/${meetingId}/join`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -64,6 +72,10 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error joining meeting:', error);
     }
+  }
+
+  const handleClose = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -95,6 +107,11 @@ const Dashboard = () => {
           <p>No upcoming meetings.</p>
         )}
       </div>
+      <ConsentModal
+        isOpen={isModalOpen}
+        onRequestClose={handleClose}
+        onProceed={handleProceed}
+      />
     </div>
   );
 };
