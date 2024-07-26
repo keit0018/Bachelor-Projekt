@@ -5,8 +5,7 @@ import '../assets/styles/Meetingschedule.css';
 const MeetingSchedulePage = () => {
   const [meetingData, setMeetingData] = useState({
     title: '',
-    date: '',
-    time: '',
+    dateTime: new Date().toISOString().slice(0, 16),
     participants: [],
   });
 
@@ -106,23 +105,12 @@ const MeetingSchedulePage = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="date">Date</label>
+          <label htmlFor="dateTime">Date</label>
           <input
-            type="date"
-            id="date"
-            name="date"
-            value={meetingData.date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="time">Time</label>
-          <input
-            type="time"
-            id="time"
-            name="time"
-            value={meetingData.time}
+            type="datetime-local"
+            id="dateTime"
+            name="dateTime"
+            value={meetingData.dateTime}
             onChange={handleChange}
             required
           />

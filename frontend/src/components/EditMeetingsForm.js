@@ -4,8 +4,7 @@ import '../assets/styles/EditMeetingsForm.css';
 
 const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
   const [title, setTitle] = useState(meeting.title);
-  const [date, setDate] = useState(meeting.date.split('T')[0]); // Ensure date format is correct
-  const [time, setTime] = useState(meeting.time);
+  const [dateTime, setDateTime] = useState(meeting.dateTime);
   const [participants, setParticipants] = useState(meeting.participants);
   const [participantSearch, setParticipantSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -62,8 +61,7 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
     const updatedMeeting = {
       ...meeting,
       title,
-      date,
-      time,
+      dateTime,
       participants: participants.map(participant => participant._id),
     };
   
@@ -100,22 +98,13 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="date">Date</label>
+          <label htmlFor="dateTime">Date</label>
           <input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="time">Time</label>
-          <input
-            type="time"
-            id="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
+            type="datetime-local"
+            id="dateTime"
+            name="dateTime"
+            value={dateTime}
+            onChange={(e) => setDateTime(e.target.value)}
             required
           />
         </div>

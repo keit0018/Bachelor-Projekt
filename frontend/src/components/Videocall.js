@@ -49,6 +49,22 @@ const VideoCall = ({ meetingId }) => {
     }
   }, [communicationUserId]);
 
+  const markattendence = useCallback(async() => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('marking Attendence', token);
+      const response = await axios.post('https://localhost:5000/api/attendance/mark',{meetingId},
+        {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });  
+      return response;
+    } catch (error) {
+      console.error('failed to mark attendence')
+    }
+  },[meetingId])
+
   const leaveCall = useCallback(async (callAdapter) => {
     console.log("leaving call...", callAdapter);
     if (callAdapter) {
@@ -108,19 +124,20 @@ const VideoCall = ({ meetingId }) => {
 
         console.log(isCreator.current);
         if(isCreator.current){
-        callAdapter.onStateChange(async () => {
-            const call = callAdapter.getState().call;
-            if (call && call.state === 'Connected') {
-              call.info.getServerCallId().then(async (serverCallId) => {
-                  console.log('Server Call ID:', serverCallId);
-                  await startRecording(serverCallId, createdBy);
-                }).catch(err => {
-                  console.log('Failed to get Server Call ID:', err);
-                });
-              } else if (call && call.state ==='Disconnecting'){
-                await stopRecording(call.id);
-              }
-            });
+          await markattendence(); 
+          callAdapter.onStateChange(async () => {
+              const call = callAdapter.getState().call;
+              if (call && call.state === 'Connected') {
+                call.info.getServerCallId().then(async (serverCallId) => {
+                    console.log('Server Call ID:', serverCallId);
+                    await startRecording(serverCallId, createdBy);
+                  }).catch(err => {
+                    console.log('Failed to get Server Call ID:', err);
+                  });
+                } else if (call && call.state ==='Disconnecting'){
+                  await stopRecording(call.id);
+                }
+              });
         }
 
         callAdapter.on('callEnded', async () => {
@@ -180,7 +197,7 @@ const VideoCall = ({ meetingId }) => {
       {isFullscreen && (
         <div className="fullscreen-overlay">
           <FluentThemeProvider>
-            <div style={{ height: '100vh', display: 'flex' }}>
+            <div className="call-composite-container">
               <CallComposite adapter={adapter} />
               <button className="close-button" onClick={closeFullscreen}>X</button>
             </div>

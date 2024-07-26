@@ -4,13 +4,12 @@ const Attendance = require('../models/attendence');
 
 exports.createMeeting = async (req, res) => {
     try {
-        const { title, date, time, participants } = req.body;
+        const { title, dateTime, participants } = req.body;
         const createdBy = req.user.userId;
         const groupId = uuidv4();
         const meeting = new Meeting({
         title,
-        date,
-        time,
+        dateTime,
         participants,
         groupId,
         createdBy
@@ -109,7 +108,7 @@ exports.getUnattendedMeetings = async (req, res) => {
 
 exports.updateMeeting = async (req, res) => {
     try {
-        const { title, date, time, participants } = req.body;
+        const { title, dateTime, participants } = req.body;
         const meetingId = req.params.id;
         const meeting = await Meeting.findById(meetingId);
         
@@ -124,8 +123,7 @@ exports.updateMeeting = async (req, res) => {
 
         const updatedMeeting = await Meeting.findByIdAndUpdate(meetingId, {
             title,
-            date,
-            time,
+            dateTime,
             participants
         }, { new: true });
 

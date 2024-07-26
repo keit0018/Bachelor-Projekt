@@ -12,10 +12,7 @@ const authorizeMeetingAccess = async (req, res, next) => {
   
       const currentTime = new Date();
 
-      const combinedDateTime = new Date(meeting.date);
-      const [hours, minutes] = meeting.time.split(':');
-      combinedDateTime.setHours(hours, minutes);
-      
+      const combinedDateTime = new Date(meeting.dateTime);
 
       if (currentTime < combinedDateTime ) {
         return res.status(403).json({ message: 'Meeting is not active' });

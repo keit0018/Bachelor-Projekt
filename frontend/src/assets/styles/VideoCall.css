@@ -41,3 +41,10 @@
   border-radius: 20px;
   cursor: pointer;
 }
+
+.call-composite-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}

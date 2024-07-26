@@ -22,18 +22,12 @@ const Dashboard = () => {
         });
         
         const meetingsWithDateTime = response.data.map(meeting => {
-          const combinedDateTime = new Date(meeting.date);
-          const [hours, minutes] = meeting.time.split(':');
-          combinedDateTime.setHours(hours, minutes);
-          return { ...meeting, dateTime: combinedDateTime };
+          return { ...meeting, dateTime: new Date(meeting.dateTime) };
         });
-        // Sort meetings by time
+  
         const sortedMeetings = meetingsWithDateTime.sort((a, b) => a.dateTime - b.dateTime);
-
-        // Set the next meeting
+  
         setNextMeeting(sortedMeetings[0]);
-
-        // Set upcoming meetings, limited to the next 5 meetings
         setUpcomingMeetings(sortedMeetings.slice(1, 6));
       } catch (error) {
         console.error('Error fetching meetings:', error);

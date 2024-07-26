@@ -19,6 +19,7 @@ const ManageMeetingsPage = () => {
             Authorization: `Bearer ${token}`
         }
       });
+      console.log(createdMeetings);
       setCreatedMeetings(response.data);
     } catch (error) {
       console.error('Error fetching created meetings:', error);
@@ -54,14 +55,14 @@ const ManageMeetingsPage = () => {
   };
 
   return (
-    <div className="manage-meetings-container">
+    <div>
+    {createdMeetings.length >0 ? (<div className="manage-meetings-container">
       <h2>Manage Meetings</h2>
       <table className="meetings-table">
         <thead>
           <tr>
             <th>Title</th>
             <th>Date</th>
-            <th>Time</th>
             <th>Participants</th>
             <th>Actions</th>
           </tr>
@@ -70,8 +71,7 @@ const ManageMeetingsPage = () => {
           {createdMeetings.map(meeting => (
             <tr key={meeting._id}>
               <td>{meeting.title}</td>
-              <td>{new Date(meeting.date).toLocaleDateString()}</td>
-              <td>{meeting.time}</td>
+              <td>{new Date(meeting.dateTime).toLocaleString()}</td>
               <td>{meeting.participants.map(p => p.username).join(', ')}</td>
               <td>
                 <button onClick={() => handleEdit(meeting)}>Edit</button>
@@ -89,6 +89,7 @@ const ManageMeetingsPage = () => {
           onCancel={handleCancel}
         />
       )}
+    </div>):(<p>No meetings scheduled for the future.</p>)}
     </div>
   );
 };

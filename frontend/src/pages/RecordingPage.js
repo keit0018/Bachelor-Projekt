@@ -2,23 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/styles/RecordingPage.css';
 
-/*const mockRecordings = [
-  {
-    id: 1,
-    title: 'Team Meeting',
-    url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-  },
-  {
-    id: 2,
-    title: 'Project Update',
-    url: 'https://www.w3schools.com/html/movie.mp4',
-  },
-  // Add more mock recordings as needed
-];*/
-
 const RecordingPage = () => {
   const [recordings, setRecordings] = useState([]);
   const [selectedRecording, setSelectedRecording] = useState(null);
+  const [currentRecordingId, setCurrentRecordingId] = useState(null);
 
   useEffect(() => {
     async function fetchRecordings() {
@@ -41,6 +28,11 @@ const RecordingPage = () => {
 
   const handlePlayRecording = async (recordingId) => {
     try {
+      if (currentRecordingId === recordingId) {
+        setSelectedRecording(null);
+        setCurrentRecordingId(null);
+        return;
+      }
       console.log(recordingId);
       const response = await axios.get('https://localhost:5000/api/recordings/getSecureVideoLink', {
         params: { recordingId },
@@ -50,10 +42,12 @@ const RecordingPage = () => {
       });
       console.log(response.data.sasUrl);
       setSelectedRecording(response.data.sasUrl);
+      setCurrentRecordingId(recordingId);
     } catch (error) {
       console.error('Failed to fetch SAS URL:', error);
     }
   };
+
 
   return (
     <div className="recording-page">
@@ -61,14 +55,15 @@ const RecordingPage = () => {
       <div className="recording-list">
         {recordings.map((recording) => (
           <div key={recording._id} className="recording-item">
-            <span>{recording.endTime || 'Untitled Meeting'}</span>
-            <button onClick={() => handlePlayRecording(recording.recordingId)}>Play</button>
+            <span>{recording.endTime || 'Loading recording...'}</span>
+            <button onClick={() => handlePlayRecording(recording.recordingId)}>
+            {currentRecordingId === recording.recordingId ? 'Close' : 'Play'}
+              </button>
           </div>
         ))}
       </div>
       {selectedRecording && (
         <div className="video-player">
-          <h3>Playback</h3>
           <video controls src={selectedRecording} />
         </div>
       )}
