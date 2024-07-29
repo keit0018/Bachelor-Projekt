@@ -107,7 +107,6 @@ const VideoCall = ({ meetingId }) => {
   const initCallAdapter = useCallback(async () => {
     try {
       if(initializationCounter.current<1){
-        console.log("initializing",initializationCounter.current," ", adapter);
         initializationCounter.current += 1;
         const { createdBy, participants, groupId } = await fetchParticipants();
         const token = await fetchToken();

@@ -5,7 +5,6 @@ const config = require('../config/config');
 
 
 const getToken = async (req, res) => {
-  
   try {
     const connectionString = config.acsConnectionString;
     const identityClient = new CommunicationIdentityClient(connectionString);

@@ -1,6 +1,6 @@
 import React, { useState} from 'react';
 import { useParams } from 'react-router-dom';
-import VideoCall from '../components/Videocall';
+import VideoCall from '../components/VideoCall';
 import '../assets/styles/VideoCallPage.css';
 
 const VideoCallPage = () => {
