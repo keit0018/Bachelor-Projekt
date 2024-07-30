@@ -6,13 +6,14 @@ const RecordingPage = () => {
   const [recordings, setRecordings] = useState([]);
   const [selectedRecording, setSelectedRecording] = useState(null);
   const [currentRecordingId, setCurrentRecordingId] = useState(null);
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     async function fetchRecordings() {
       try {
         const userId = localStorage.getItem('userId');
         console.log(userId);
-        const response = await axios.get('https://localhost:5000/api/recordings/getRecordings', {
+        const response = await axios.get(`${baseURL}/api/recordings/getRecordings`, {
           headers: {
             'userId': userId
           }
@@ -34,7 +35,7 @@ const RecordingPage = () => {
         return;
       }
       console.log(recordingId);
-      const response = await axios.get('https://localhost:5000/api/recordings/getSecureVideoLink', {
+      const response = await axios.get(`${baseURL}/api/recordings/getSecureVideoLink`, {
         params: { recordingId },
         headers: {
           'user-id': localStorage.getItem('userId')

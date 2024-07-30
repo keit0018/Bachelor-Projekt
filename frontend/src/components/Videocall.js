@@ -12,6 +12,7 @@ initializeIcons();
 registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
 
 const VideoCall = ({ meetingId }) => {
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
   const [adapter, setAdapter] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(true);
   const communicationUserId = localStorage.getItem('communicationUserId');
@@ -23,9 +24,10 @@ const VideoCall = ({ meetingId }) => {
   const endRecording = useRef(0);
   const isCreator = useRef(false);
 
+
   const fetchParticipants = useCallback(async () => {
     try {
-      const meetingResponse = await axios.get(`https://localhost:5000/api/meetings/${meetingId}`);
+      const meetingResponse = await axios.get(`${baseURL}/api/meetings/${meetingId}`);
       const createdBycsid = meetingResponse.data.createdBy.communicationUserId;
       isCreator.current = createdBycsid === communicationUserId;
       return {
@@ -41,7 +43,7 @@ const VideoCall = ({ meetingId }) => {
 
   const fetchToken = useCallback(async () => {
     try {
-      const response = await axios.post('https://localhost:5000/api/communication/getToken', { communicationUserId });
+      const response = await axios.post(`${baseURL}/api/communication/getToken`, { communicationUserId });
       return response.data.token;
     } catch (error) {
       console.error('Failed to fetch token:', error);
@@ -53,7 +55,7 @@ const VideoCall = ({ meetingId }) => {
     try {
       const token = localStorage.getItem('token');
       console.log('marking Attendence', token);
-      const response = await axios.post('https://localhost:5000/api/attendance/mark',{meetingId},
+      const response = await axios.post(`${baseURL}/api/attendance/mark`,{meetingId},
         {
         headers: {
           Authorization: `Bearer ${token}`
@@ -79,7 +81,7 @@ const VideoCall = ({ meetingId }) => {
       console.log(isCreator.current);
       if(initializationRecordingCounter.current<1){
         initializationRecordingCounter.current+=1;
-        await axios.post('https://localhost:5000/api/recordings/startRecording', {
+        await axios.post(`${baseURL}/api/recordings/startRecording`, {
           serverCallId,
           meetingId,
           createdBy
@@ -97,7 +99,7 @@ const VideoCall = ({ meetingId }) => {
       if(endRecording.current<1){
         endRecording.current+=1;
         console.log("before stoping call: ", callId)
-        await axios.post('https://localhost:5000/api/recordings/stopRecording', { meetingId, callId }); 
+        await axios.post(`${baseURL}/api/recordings/stopRecording`, { meetingId, callId }); 
       }
     } catch (error) {
       console.error('Failed to stop recording:', error);

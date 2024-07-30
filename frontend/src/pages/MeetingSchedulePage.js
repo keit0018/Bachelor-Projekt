@@ -11,13 +11,14 @@ const MeetingSchedulePage = () => {
 
   const [participantSearch, setParticipantSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     if (participantSearch.length > 0) {
       const fetchSearchResults = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get(`https://localhost:5000/api/users/search?query=${participantSearch}`, {
+          const response = await axios.get(`${baseURL}/api/users/search?query=${participantSearch}`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -68,7 +69,7 @@ const MeetingSchedulePage = () => {
       const token = localStorage.getItem('token');
       const userId = JSON.parse(atob(token.split('.')[1]))._id; // Decode the token to get the user ID
 
-      await axios.post('https://localhost:5000/api/meetings', {
+      await axios.post(`${baseURL}/api/meetings`, {
         ...meetingData,
         createdBy: userId
       }, {

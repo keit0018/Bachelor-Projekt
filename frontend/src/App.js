@@ -3,15 +3,15 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import ManageMeetingsPage from './pages/ManageMeetingsPage';
 import MeetingSchedulePage from './pages/MeetingSchedulePage';
-import SignUp from './pages/Signup';
 import "@fontsource/roboto";
 import VideoCallPage from './pages/VideoCallPage';
 import RecordingPage from './pages/RecordingPage';
 import SettingsPage from './pages/SettingsPage';
 import Sidebar from './components/Sidebar';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import withRole from './components/withRole';
+
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);

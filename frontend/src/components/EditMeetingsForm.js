@@ -8,13 +8,14 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
   const [participants, setParticipants] = useState(meeting.participants);
   const [participantSearch, setParticipantSearch] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     if (participantSearch.length > 0) {
       const fetchSearchResults = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get(`https://localhost:5000/api/users/search?query=${participantSearch}`, {
+          const response = await axios.get(`${baseURL}/api/users/search?query=${participantSearch}`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -70,7 +71,7 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
   
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`https://localhost:5000/api/meetings/${meeting._id}`, updatedMeeting, {
+      const response = await axios.put(`${baseURL}/api/meetings/${meeting._id}`, updatedMeeting, {
         headers: {
           Authorization: `Bearer ${token}`
         }

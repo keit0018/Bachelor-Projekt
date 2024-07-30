@@ -10,12 +10,13 @@ const Dashboard = () => {
   const currentMeeting = useRef(null);
   const [upcomingMeetings, setUpcomingMeetings] = useState([]);
   const navigate = useNavigate();
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://localhost:5000/api/meetings/unattended', {
+        const response = await axios.get(`${baseURL}/api/meetings/unattended`, {
           headers: {
               Authorization: `Bearer ${token}`
           }
@@ -48,7 +49,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       const meetingId = currentMeeting.current;
       console.log(meetingId)
-      const response = await axios.get(`https://localhost:5000/api/meetings/${meetingId}/join`, {
+      const response = await axios.get(`${baseURL}/api/meetings/${meetingId}/join`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

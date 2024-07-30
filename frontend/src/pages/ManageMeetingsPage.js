@@ -6,6 +6,7 @@ import EditMeetingForm from '../components/EditMeetingsForm';
 const ManageMeetingsPage = () => {
   const [createdMeetings, setCreatedMeetings] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   useEffect(() => {
     fetchCreatedMeetings();
@@ -14,7 +15,7 @@ const ManageMeetingsPage = () => {
   const fetchCreatedMeetings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://localhost:5000/api/meetings/unattended', {
+      const response = await axios.get(`${baseURL}/api/meetings/unattended`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -34,7 +35,7 @@ const ManageMeetingsPage = () => {
   const handleDelete = async (meetingId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://localhost:5000/api/meetings/${meetingId}`, {
+      await axios.delete(`${baseURL}/api/meetings/${meetingId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
