@@ -91,8 +91,6 @@ exports.getUnattendedMeetings = async (req, res) => {
             }
         }
 
-        console.log(unattendedMeetings);
-
         // Populate the unattended meetings with participants and createdBy
         const populatedMeetings = await Meeting.populate(unattendedMeetings, [
             { path: 'participants', select: 'username' },
