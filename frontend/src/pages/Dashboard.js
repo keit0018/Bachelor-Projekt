@@ -26,8 +26,7 @@ const Dashboard = () => {
           return { ...meeting, dateTime: new Date(meeting.dateTime) };
         });
   
-        const sortedMeetings = meetingsWithDateTime.sort((a, b) => a.dateTime - b.dateTime);
-  
+        const sortedMeetings = meetingsWithDateTime.sort((a, b) => a.dateTime - b.dateTime); 
         setNextMeeting(sortedMeetings[0]);
         setUpcomingMeetings(sortedMeetings.slice(1, 6));
       } catch (error) {
@@ -48,18 +47,13 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const meetingId = currentMeeting.current;
-      console.log(meetingId)
       const response = await axios.get(`${baseURL}/api/meetings/${meetingId}/join`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      console.log(response);
-
-      if (response.status === 200) {
-        // Redirect to the video call component or open it
-        console.log('User can join the meeting');
+      if (response.status === 200) {;
         navigate(`/video-call/${meetingId}`);
       } else {
         console.error('User is not authorized to join the meeting');

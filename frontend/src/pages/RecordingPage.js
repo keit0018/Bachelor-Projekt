@@ -12,7 +12,6 @@ const RecordingPage = () => {
     async function fetchRecordings() {
       try {
         const userId = localStorage.getItem('userId');
-        console.log(userId);
         const response = await axios.get(`${baseURL}/api/recordings/getRecordings`, {
           headers: {
             'userId': userId
@@ -34,14 +33,12 @@ const RecordingPage = () => {
         setCurrentRecordingId(null);
         return;
       }
-      console.log(recordingId);
       const response = await axios.get(`${baseURL}/api/recordings/getSecureVideoLink`, {
         params: { recordingId },
         headers: {
           'user-id': localStorage.getItem('userId')
         }
       });
-      console.log(response.data.sasUrl);
       setSelectedRecording(response.data.sasUrl);
       setCurrentRecordingId(recordingId);
     } catch (error) {

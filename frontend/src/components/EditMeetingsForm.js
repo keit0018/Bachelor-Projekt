@@ -49,11 +49,6 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-  
-    // Log the participants array for debugging
-    console.log('Participants:', participants);
-  
-    // Check if participants array is in the correct format
     if (!Array.isArray(participants) || participants.some(participant => !participant._id)) {
       console.error('Invalid participants array');
       return;
@@ -66,9 +61,6 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
       participants: participants.map(participant => participant._id),
     };
   
-    // Log the updatedMeeting object for debugging
-    console.log('Updated Meeting:', updatedMeeting);
-  
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(`${baseURL}/api/meetings/${meeting._id}`, updatedMeeting, {
@@ -77,9 +69,7 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
         }
       });
       onSave();
-      // Log the response from the server for debugging
     } catch (error) {
-      // Capture detailed error information
       console.error('Error updating meeting:', error.response ? error.response.data : error.message);
     }
   };
@@ -143,6 +133,5 @@ const EditMeetingForm = ({ meeting, onSave, onCancel }) => {
     </div>
   );
 };
-
 
 export default EditMeetingForm;

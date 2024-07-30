@@ -15,20 +15,14 @@ const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
 
 
       if (response.status === 200) {
-
-        console.log(response.data);
-        
         const { token, role, communicationUserId, username, userId } = response.data;
         localStorage.setItem('communicationUserId', communicationUserId);
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
         localStorage.setItem('userId', userId);
-        console.log("userId: ", userId);
         setAuthenticated(true);
-        console.log(role);
         setUserRole(role);
         setCommunicationUserId(communicationUserId);
-        console.log(communicationUserId);
         login({ communicationUserId, username });
         navigate('/dashboard');
       } else {

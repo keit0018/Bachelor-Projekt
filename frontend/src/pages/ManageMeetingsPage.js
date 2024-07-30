@@ -20,7 +20,6 @@ const ManageMeetingsPage = () => {
             Authorization: `Bearer ${token}`
         }
       });
-      console.log(createdMeetings);
       setCreatedMeetings(response.data);
     } catch (error) {
       console.error('Error fetching created meetings:', error);
@@ -28,7 +27,6 @@ const ManageMeetingsPage = () => {
   };
 
   const handleEdit = (meeting) => {
-    console.log(meeting);
     setSelectedMeeting(meeting);
   };
 

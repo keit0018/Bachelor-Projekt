@@ -54,7 +54,6 @@ const VideoCall = ({ meetingId }) => {
   const markattendence = useCallback(async() => {
     try {
       const token = localStorage.getItem('token');
-      console.log('marking Attendence', token);
       const response = await axios.post(`${baseURL}/api/attendance/mark`,{meetingId},
         {
         headers: {
@@ -68,7 +67,6 @@ const VideoCall = ({ meetingId }) => {
   },[meetingId])
 
   const leaveCall = useCallback(async (callAdapter) => {
-    console.log("leaving call...", callAdapter);
     if (callAdapter) {
       await callAdapter.dispose();
       setAdapter(null);
@@ -78,7 +76,6 @@ const VideoCall = ({ meetingId }) => {
 
   const startRecording = async (serverCallId, createdBy) => {
     try {
-      console.log(isCreator.current);
       if(initializationRecordingCounter.current<1){
         initializationRecordingCounter.current+=1;
         await axios.post(`${baseURL}/api/recordings/startRecording`, {
@@ -94,11 +91,8 @@ const VideoCall = ({ meetingId }) => {
 
   const stopRecording = async (callId) => {
     try {
-      console.log(isCreator.current);
-      console.log("call recording ending", endRecording.current)
       if(endRecording.current<1){
         endRecording.current+=1;
-        console.log("before stoping call: ", callId)
         await axios.post(`${baseURL}/api/recordings/stopRecording`, { meetingId, callId }); 
       }
     } catch (error) {
@@ -123,17 +117,15 @@ const VideoCall = ({ meetingId }) => {
         setAdapter(callAdapter);
         setIsFullscreen(true);
 
-        console.log(isCreator.current);
         if(isCreator.current){
           await markattendence(); 
           callAdapter.onStateChange(async () => {
               const call = callAdapter.getState().call;
               if (call && call.state === 'Connected') {
                 call.info.getServerCallId().then(async (serverCallId) => {
-                    console.log('Server Call ID:', serverCallId);
                     await startRecording(serverCallId, createdBy);
                   }).catch(err => {
-                    console.log('Failed to get Server Call ID:', err);
+                    console.error('Failed to get Server Call ID:', err);
                   });
                 } else if (call && call.state ==='Disconnecting'){
                   await stopRecording(call.id);
@@ -142,10 +134,8 @@ const VideoCall = ({ meetingId }) => {
         }
 
         callAdapter.on('callEnded', async () => {
-          console.log('Call ended. Cleaning up...');
           const endTime = new Date().toLocaleTimeString();
           const participantNames = participants.map(p => p.username).join(', ');
-          console.log(endTime, participantNames);
           setCallDetails({
             participantNames,
             endTime,
