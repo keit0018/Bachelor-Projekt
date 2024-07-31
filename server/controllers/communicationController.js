@@ -11,15 +11,11 @@ const getToken = async (req, res) => {
 
     const { communicationUserId } = req.body;
 
-    console.log(communicationUserId);
-
     if (!communicationUserId) {
       return res.status(400).json({ message: 'Communication user ID is required' });
     }
 
-    // Generate token
     const tokenResponse = await identityClient.getToken({ communicationUserId }, ["voip"]);
-    console.log(tokenResponse);
     res.json(tokenResponse);
   } catch (error) {
     console.error('Error generating ACS token:', error);

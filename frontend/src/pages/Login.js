@@ -8,10 +8,11 @@ import { useAuth } from '../contexts/AuthContext';
 const Login = ({ setAuthenticated, setUserRole, setCommunicationUserId }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const baseURL = process.env.REACT_APP_BACKEND_API_URL;
 
   const handleLogin = async (formData) => {
     try {
-      const response = await axios.post('https://localhost:5000/api/users/login', formData);
+      const response = await axios.post(`${baseURL}/api/users/login`, formData);
 
 
       if (response.status === 200) {

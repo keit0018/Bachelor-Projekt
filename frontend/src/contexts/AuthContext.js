@@ -10,12 +10,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = ({ communicationUserId, username }) => {
     setIsLoggedIn(true);
-    console.log("loggedin state", isLoggedIn);
     setUser({ communicationUserId, username });
   };
 
   const logout = () => {
-    console.log("officially logging out,");
     localStorage.removeItem('token');
     localStorage.removeItem('communicationUserId');
     localStorage.removeItem('username');

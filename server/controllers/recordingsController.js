@@ -12,7 +12,6 @@ const sharedKeyCredential = new StorageSharedKeyCredential(config.blobStorageAcc
 
 async function generateBlobSasUrl(blobUrl) {
   const blobName = blobUrl.replace('https://videoplatformoptagelser.blob.core.windows.net/videomeetingrecordings/','');
-  console.log("blobname: ",blobName)
   const blobClient = containerClient.getBlobClient(blobName);
   const expiresOn = new Date(new Date().valueOf() + 3600 * 1000); // SAS token expires in 1 hour
 
@@ -22,7 +21,6 @@ async function generateBlobSasUrl(blobUrl) {
     permissions: BlobSASPermissions.parse("r"), 
     expiresOn
   }, sharedKeyCredential).toString();
-  console.log("sas url: ", blobClient,"sas token: ", sasToken);
 
   return `${blobClient.url}?${sasToken}`;
 }
@@ -44,9 +42,6 @@ async function getRecordingUrlFromBlobStorage(date, callId) {
       let currentItem = item.name.toString();
       if(currentItem.includes(prefix) && currentItem.endsWith('mp4')){
         const blobClient = containerClient.getBlobClient(item.name);
-        console.log("item: ", item); // Debugging items
-        console.log('MP4 file found: ', blobClient.url);
-        console.log("item: ", item);
         return blobClient.url;
       }
     }
@@ -85,9 +80,7 @@ exports.startRecording = async function (req, res) {
     let recording = await Recording.findOne({ meetingId });
 
     if (recording) {
-      // Delete the existing recording
       await Recording.deleteOne({ meetingId });
-      console.log(`Deleted existing recording for meeting ID: ${meetingId}`);
     }
 
     var locator = { id: serverCallId, kind: "serverCallLocator" };
@@ -103,15 +96,11 @@ exports.startRecording = async function (req, res) {
     };
     var startRecordingRequestOutput = await client.getCallRecording().start(options);
     let recordingId = startRecordingRequestOutput.recordingId;
-   
-    console.log("START CALL RECORDING: ", recordingId);
-    // Save the initial recording metadata to MongoDB
-
 
     recording = new Recording({
       meetingId,
       createdby: createdBy,
-      endTime: null, // Initial value, to be updated when recording stops
+      endTime: null, 
       recordingId: recordingId
     });
     await recording.save();
@@ -126,8 +115,6 @@ exports.startRecording = async function (req, res) {
 exports.stopRecording = async function (req, res) {
   try {
     const { meetingId, callId } = req.body;
-
-    console.log("callid: ", callId);
 
     const recording = await Recording.findOne({ meetingId });
 
@@ -158,7 +145,6 @@ exports.stopRecording = async function (req, res) {
 exports.getRecordingsForUser = async function (req, res) {
   try {
     const userId = req.headers['userid'];
-    console.log(userId);
     const recordings = await Recording.find({ createdby: userId });
     res.json(recordings);
   } catch (e) {
@@ -177,7 +163,6 @@ exports.getVideoLink = async function(req,res){
     }
 
     const sasUrl = await generateBlobSasUrl(recording.recordingurl);
-    console.log(sasUrl);
     res.json({ sasUrl });
     
   } catch (e) {

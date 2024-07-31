@@ -8,12 +8,10 @@ exports.login = async (req, res) => {
       const { username, password } = req.body;
       const user = await User.findOne({ username });
       
-      console.log(req);
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
       const isMatch = await user.comparePassword(password);
-      console.log(`Password match for ${username}: ${isMatch}`);
       
       if (!isMatch) {
         return res.status(401).json({ message: 'Invalid credentials' });

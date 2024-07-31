@@ -18,16 +18,12 @@ require('dotenv').config();
 //creating express server
 const app = express();
 const port = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 app.use(express.json());
-
-const sslOptions = {
-  key: fs.readFileSync(path.resolve('C:/Users/kbiro/Documents/SSL_certificates/localhost-key.pem')),
-  cert: fs.readFileSync(path.resolve('C:/Users/kbiro/Documents/SSL_certificates/localhost.pem'))
-};
 
 //middleware 
 app.use(cors({
-  origin: 'https://localhost:3000', 
+  origin: `${FRONTEND_URL}`, 
   credentials: true, 
 }));
 
@@ -36,7 +32,7 @@ app.use(bodyParser.json());
 
 app.get('/set-cookie', (req, res) => {
   res.cookie('myCookie', 'cookieValue', {
-    sameSite: 'None',
+    sameSite: 'None',   
     secure: true,
     httpOnly: true,
   });
@@ -58,7 +54,6 @@ app.use('/api/attendance', attendenceRoutes);
 app.use('/api/recordings', recordingRoutes);
 
 
-//confirmation that server is running
-https.createServer(sslOptions, app).listen(port, () => {
-  console.log(`HTTPS Server is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

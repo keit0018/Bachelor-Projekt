@@ -24,7 +24,6 @@ exports.createMeeting = async (req, res) => {
         });
       
         await attendanceRecord.save();
-        console.log(attendanceRecord);
 
         res.status(201).json(savedMeeting);
     } catch (error) {
@@ -51,7 +50,6 @@ try {
           { participants: userId }
         ]
     }).populate('participants', 'username').populate('createdBy', 'username');
-    console.log(meetings);
     res.status(200).json(meetings);
 } catch (error) {
     res.status(500).json({ error: error.message });
@@ -76,7 +74,6 @@ exports.getUnattendedMeetings = async (req, res) => {
         for (const meeting of meetings) {
             // Check if the user is the creator or a participant
             const creatorId = meeting.createdBy.toString();
-            console.log(creatorId);
 
             // Check attendance for the creator
             const attendance = await Attendance.findOne({
