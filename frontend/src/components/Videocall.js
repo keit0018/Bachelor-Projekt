@@ -10,7 +10,7 @@ import { Oval } from 'react-loader-spinner';
 
 initializeIcons();
 registerIcons({ icons: DEFAULT_COMPONENT_ICONS });
-
+//video call component change
 const VideoCall = ({ meetingId }) => {
   const baseURL = process.env.REACT_APP_BACKEND_API_URL;
   const [adapter, setAdapter] = useState(null);
