@@ -4,6 +4,7 @@ import '../assets/styles/ConsentModal.css';
 
 Modal.setAppElement('#root');
 
+//module for consent
 const ConsentModal = ({ isOpen, onRequestClose, onProceed }) => {
   return (
     <Modal
