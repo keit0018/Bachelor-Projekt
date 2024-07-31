@@ -28,7 +28,7 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-//app.use(logAction);
+app.use(logAction);
 
 app.get('/set-cookie', (req, res) => {
   res.cookie('myCookie', 'cookieValue', {
