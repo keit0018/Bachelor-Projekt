@@ -53,6 +53,9 @@ app.use('/api/communication', communicationRoutes);
 app.use('/api/attendance', attendenceRoutes);
 app.use('/api/recordings', recordingRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
