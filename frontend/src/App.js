@@ -12,7 +12,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useState } from 'react';
 import withRole from './components/withRole';
 
-
+//application
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState('');
