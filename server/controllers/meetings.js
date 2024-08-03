@@ -60,7 +60,6 @@ exports.getUnattendedMeetings = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        // Find all meetings where the user is a participant or the creator
         const meetings = await Meeting.find({
             $or: [
                 { createdBy: userId },
@@ -68,27 +67,21 @@ exports.getUnattendedMeetings = async (req, res) => {
             ]
         });
 
-        // Prepare an array to store meetings that are unattended by the creator
         let unattendedMeetings = [];
 
         for (const meeting of meetings) {
-            // Check if the user is the creator or a participant
             const creatorId = meeting.createdBy.toString();
 
-            // Check attendance for the creator
             const attendance = await Attendance.findOne({
                 meetingId: meeting._id,
                 userId: creatorId,
                 attended: false
             });
-
-            // If the attendance record exists and is unattended, add to unattendedMeetings
             if (attendance) {
                 unattendedMeetings.push(meeting);
             }
         }
 
-        // Populate the unattended meetings with participants and createdBy
         const populatedMeetings = await Meeting.populate(unattendedMeetings, [
             { path: 'participants', select: 'username' },
             { path: 'createdBy', select: 'username' }
@@ -111,7 +104,6 @@ exports.updateMeeting = async (req, res) => {
         return res.status(404).json({ message: 'Meeting not found' });
         }
 
-        // Check if the user is allowed to update this meeting
         if (meeting.createdBy.toString() !== req.user.userId) {
         return res.status(403).json({ message: 'User not authorized to update this meeting' });
         }

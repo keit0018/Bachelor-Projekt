@@ -27,7 +27,9 @@ function App() {
          <Router>
             <Sidebar authenticated={authenticated} setAuthenticated={setAuthenticated} userRole={userRole} />
               <Routes>
-                <Route path="/" element={<Login setAuthenticated={setAuthenticated} setUserRole={setUserRole} setCommunicationUserId={setCommunicationUserId} />} />
+                <Route path="/" element={<Login setAuthenticated={setAuthenticated} 
+                                                setUserRole={setUserRole} 
+                                                setCommunicationUserId={setCommunicationUserId} />} />
                 <Route 
                   path="/dashboard" 
                   element={authenticated ? <Dashboard /> : <Navigate to="/" />} 
