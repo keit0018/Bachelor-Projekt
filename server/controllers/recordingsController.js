@@ -36,7 +36,6 @@ function formatDate(date) {
 async function getRecordingUrlFromBlobStorage(date, callId) {
   try{
     const prefix = `${date}/${callId}`;
-    // List blobs under the prefix to find the folder
     const blobs = containerClient.listBlobsFlat();
     for await (const item of blobs) {
       let currentItem = item.name.toString();
