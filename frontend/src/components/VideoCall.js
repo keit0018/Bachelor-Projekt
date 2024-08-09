@@ -154,7 +154,7 @@ const VideoCall = ({ meetingId }) => {
     initCallAdapter();
 
   
-  }, []);
+  }, [initCallAdapter]);
 
   if (!adapter && !endedcall.current) {
     return ( 
